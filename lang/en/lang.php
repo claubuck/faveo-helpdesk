@@ -1279,6 +1279,8 @@ return [
     'del_all_read'                                => 'Delete all read',
     'You_have_deleted_all_the_read_notifications' => 'You have deleted all the read notifications',
     'view_all_notifications'                      => 'View all notifications',
+    'you_have_notifications'                      => 'You have :count notifications.',
+    'mark_all_as_read'                           => 'Mark all as read.',
     /*
       |------------------------------------------------
       |   Error Pages

@@ -1289,6 +1289,8 @@ Puede ingresar el número de días de registros de base de datos que se eliminar
     'del_all_read'                                => 'Borrar todo leído',
     'You_have_deleted_all_the_read_notifications' => 'Has eliminado todas las notificaciones de lectura',
     'view_all_notifications'                      => 'Ver todas las notificaciones',
+    'you_have_notifications'                      => 'Tienes :count notificaciones.',
+    'mark_all_as_read'                           => 'Marcar todas como leídas.',
     /*
       |------------------------------------------------
       |   Páginas de error
@@ -1666,4 +1668,5 @@ Puede ingresar el número de días de registros de base de datos que se eliminar
     'invalid-date-range' => 'Invalid date range',
     //updated 10-10-2023
     'what_should_be_done_with_content_owned_by_this_user' => '¿Qué se debe hacer con el contenido propiedad de este usuario',
+    'ticket_conversation'                                 => 'Conversación del Ticket',
 ];

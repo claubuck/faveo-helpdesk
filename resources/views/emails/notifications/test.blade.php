@@ -15,7 +15,7 @@
     <!-- Start Main Text (introduction) -->
         <!-- Main Title -->
         <p style="padding: 15px 30px 20px 50px; margin: 0; font-size: 24px; color: #333; font-weight: bold; font-family: Arial, Helvetica, sans-serif; text-align: center;">
-            Faveo HELPDESK
+            Biwini HELPDESK
         </p>
         <!-- Main Text -->
         <p style="padding: 0px 30px 20px 50px; margin: 0; font-size: 16px; color: #333; font-weight: normal; font-family: Arial, Helvetica, sans-serif; line-height: 22px; text-align: center;">
@@ -164,7 +164,7 @@
                 
                 <!-- Main Text -->
                 <p style="padding: 0px 30px 20px 50px; margin: 0; font-size: 16px; color: #333; font-weight: normal; font-family: Arial, Helvetica, sans-serif; line-height: 22px; text-align: center; color: #3AB4FF;">
-                    <strong>     Powered by Faveo</strong>
+                    
                 </p>
              
                 <!-- End Main Text (introduction) -->

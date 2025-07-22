@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Faveo | HELP DESK</title>
+        <title>Biwini</title>
         <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
         <!-- faveo favicon -->
         <link href="{{asset("lb-faveo/media/images/favicon.ico")}}" rel="shortcut icon">
@@ -150,7 +150,7 @@
                         <a href="{{url('admin')}}" class="nav-link">{!! Lang::get('lang.admin_panel') !!}</a>
                     </li>
 
-                    @include('themes.default1.update.notification')
+                    <!-- @include('themes.default1.update.notification') -->
 
                     <li class="nav-item dropdown notifications-menu" id="myDropdown">
 
@@ -174,9 +174,9 @@
 
                             <ul class="products-list product-list-in-card pl-2 pr-2" style="height: 350px;overflow-y: scroll;">
 
-                                <li class="dropdown-header">You have {!! $notifications->count() !!} notifications.
+                                <li class="dropdown-header">{!! Lang::get('lang.you_have_notifications', ['count' => $notifications->count()]) !!}
 
-                                    <a class="float-right" id="read-all" href="#">Mark all as read.</a>
+                                    <a class="float-right" id="read-all" href="#">{!! Lang::get('lang.mark_all_as_read') !!}</a>
                                 </li>
 
                                 @if($notifications->count())
@@ -765,7 +765,7 @@
                     <span style="font-weight: 500">{!! Lang::get('lang.version') !!}</span> {!! Config::get('app.version') !!}
                 </div>
 
-                <span style="font-weight: 500">{!! Lang::get('lang.copyright') !!} &copy; {!! date('Y') !!}  <a href="{!! $company->website !!}" target="_blank">{!! $company->company_name !!}</a>.</span> {!! Lang::get('lang.all_rights_reserved') !!}. {!! Lang::get('lang.powered_by') !!} <a href="http://www.faveohelpdesk.com/" target="_blank">Faveo</a>
+                <span style="font-weight: 500">{!! Lang::get('lang.copyright') !!} &copy; {!! date('Y') !!}  <a href="{!! $company->website !!}" target="_blank">{!! $company->company_name !!}</a>.</span> {!! Lang::get('lang.all_rights_reserved') !!}
             </footer>
         </div><!-- ./wrapper -->
 

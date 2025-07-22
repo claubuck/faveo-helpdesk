@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8">
-        <title>Faveo | KB</title>
+        <title>Biwini</title>
     <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
     <!-- Bootstrap 3.3.4 -->
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
@@ -199,7 +199,7 @@
                 <div class="pull-right hidden-xs">
                     <b>{!! Lang::get('lang.version') !!}</b> {{$settings->version}}
                 </div>
-                 <strong>Copyright &copy; {{date("Y")}} <a href="{{$settings->website}}"> {{$settings->company_name}}</a>.  Powered By <a href="http://www.faveohelpdesk.com">Faveo</a>.</strong>
+                 <strong>Copyright &copy; {{date("Y")}} <a href="{{$settings->website}}"> {{$settings->company_name}}</a>. </strong>
             </footer>
 
       <!-- Control Sidebar -->

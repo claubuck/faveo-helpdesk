@@ -35,7 +35,8 @@ class Finder
             $department = Department::whereId($id)->select($custom);
         }
 
-        return $department->first()->name;
+        $result = $department->first();
+        return $result ? $result->name : null;
     }
 
     /**
@@ -55,7 +56,8 @@ class Finder
             $group = Groups::whereId($id)->select($custom);
         }
 
-        return $group->first()->name;
+        $result = $group->first();
+        return $result ? $result->name : null;
     }
 
     /**
@@ -75,7 +77,8 @@ class Finder
             $status_type = TicketStatusType::whereId($id)->select($custom);
         }
 
-        return $status_type->first()->name;
+        $result = $status_type->first();
+        return $result ? $result->name : null;
     }
 
     /**

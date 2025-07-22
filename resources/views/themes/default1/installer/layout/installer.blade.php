@@ -30,7 +30,7 @@
     <div class="setup-content">
         @yield('content')
     </div>
-    <p style="text-align: center;"> Copyright &copy; 2015 - <?php echo date('Y')?> · Ladybird Web Solution Pvt Ltd. All Rights Reserved. Powered by <a target="_blank" href="http://www.faveohelpdesk.com">Faveo </a></p>
+    <p style="text-align: center;"> Copyright &copy; 2015 - <?php echo date('Y')?> · Ladybird Web Solution Pvt Ltd. All Rights Reserved.</p>
 
     <script src="{{asset("lb-faveo/js/ggpopover.js")}}" type="text/javascript"></script>
 

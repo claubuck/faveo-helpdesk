@@ -16,7 +16,7 @@
     <div class="row fill">
         <div class="panel panel-primary fill">
             <div class="panel-heading">
-                <h3 class="panel-title">Faveo File Manager</h3>
+                <h3 class="panel-title">Biwini File Manager</h3>
             </div>
             <div class="panel-body fill">
                 <div class="row fill">

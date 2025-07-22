@@ -1,7 +1,7 @@
 <html>
 <head>
         <meta charset="UTF-8">
-        <title>Faveo HELPDESK | Insatller</title>
+        <title>Biwini HELPDESK | Insatller</title>
         <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
         <!-- bootstrap 3.0.2 -->
         <link href="{{asset("lb-faveo/downloads/bootstrap.min.css")}}" rel="stylesheet" type="text/css" />
@@ -110,7 +110,7 @@ a:active  {color:#000;}
 <body style="background-color:#d2d6de;">
 <div class="login-box">
     @yield('content')
-    <p id="footer">&copy;<?php echo date('Y')?>. Powered by <a href="http://www.faveohelpdesk.com">Faveo </a></p>
+    <p id="footer">&copy;<?php echo date('Y')?>.</p>
 </div>
 </body>
 </html>

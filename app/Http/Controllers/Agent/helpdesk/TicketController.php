@@ -132,6 +132,22 @@ class TicketController extends Controller
             $form_data = $request->except('name', 'phone', 'email', 'subject', 'body', 'helptopic', '_wysihtml5_mode', '_token', 'mobile', 'code', 'priority', 'attachment', 'first_name', 'last_name', 'sla', 'duedate', 'assignto', 'files'); //added "files" in exception list because some genius has added a new editor 'summernote' to impress his boss and screwed the functional code with his genius ability. Hence to make world capable of handling this genius's work I am adding a shitty workaround for it. After looking for solution everywhere and referring to https://stackoverflow.com/questions/59938588/summernote-adds-files-field-to-post
             $auto_response = 0;
             $status = 1;
+            
+            // Check if source and help exist
+            if (!$source) {
+                if ($api != false) {
+                    return ['error' => 'Agent ticket source not found'];
+                }
+                return Redirect()->back()->with('fails', '<li>Agent ticket source not found</li>');
+            }
+            
+            if (!$help) {
+                if ($api != false) {
+                    return ['error' => 'Help topic not found'];
+                }
+                return Redirect()->back()->with('fails', '<li>Help topic not found</li>');
+            }
+            
             if ($phone != null || $mobile_number != null) {
                 $location = GeoIP::getLocation();
                 $geoipcode = $code->where('iso', '=', $location->iso_code)->first();

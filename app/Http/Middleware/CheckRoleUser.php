@@ -21,7 +21,7 @@ class CheckRoleUser
      */
     public function handle($request, Closure $next)
     {
-        if ($request->user()->role == 'user') {
+        if ($request->user() && $request->user()->role == 'user') {
             return $next($request);
         }
 

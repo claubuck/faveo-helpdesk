@@ -120,7 +120,7 @@ foreach ($depts as $dept) {
                                        	<tbody>
                                           	<tr>
                                              	<td st-title="fulltext-heading" style="font-family: Helvetica, arial, sans-serif; font-size: 40px; color: #333333; line-height: 30px; text-align:center;">
-                                                   <b>Faveo</b>HELPDESK
+                                                   <b>Biwini</b>HELPDESK
                                               	</td>
                                           	</tr>
                                           	<tr>
@@ -432,7 +432,7 @@ foreach ($depts as $dept) {
                            <tbody>
                               <tr>
                            		<td valign="middle" style="font-family: Helvetica, arial, sans-serif; font-size: 14px;color: #666666; text-align:center;" st-content="postfooter">
-                                    Powered by <a href="#" style="text-decoration: none; color: #0a8cce">Faveo</a>
+                                    
                                  </td>
                               </tr>
                               <!-- Spacing -->
@@ -570,7 +570,7 @@ foreach ($depts as $dept) {
                 
                 <!-- Main Text -->
                 <p style="padding: 0px 30px 20px 50px; margin: 0; font-size: 16px; color: #333; font-weight: normal; font-family: Arial, Helvetica, sans-serif; line-height: 22px; text-align: center; color: #3AB4FF;">
-                    <strong>Powered by <a href="http://www.faveohelpdesk.com" target="_blank">Faveo</a></strong>
+                    
                 </p>
              
             </td>
