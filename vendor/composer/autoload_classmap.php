@@ -31,6 +31,7 @@ return array(
     'AWS\\CRT\\Options' => $vendorDir . '/aws/aws-crt-php/src/AWS/CRT/Options.php',
     'Attribute' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
+    'Database\\Seeders\\DatabaseSeeder' => $baseDir . '/database/seeders/DatabaseSeeder.php',
     'Database\\Seeders\\v_2_0_0\\DatabaseSeeder' => $baseDir . '/database/seeders/v_2_0_0/DatabaseSeeder.php',
     'Database\\Seeders\\v_2_0_0\\OutboundMailSeeder' => $baseDir . '/database/seeders/v_2_0_0/OutboundMailSeeder.php',
     'Database\\Seeders\\v_2_0_0\\TicketSourceSeeder' => $baseDir . '/database/seeders/v_2_0_0/TicketSourceSeeder.php',

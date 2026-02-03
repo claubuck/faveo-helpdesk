@@ -25,6 +25,9 @@ $(function ($) {
     /*-----------------------------------------------------------------------------------*/
     /*	Main Search */
     /*-----------------------------------------------------------------------------------*/
+    // Commented out search-terms.php as it doesn't exist and causes 404 errors
+    // If autocomplete functionality is needed, implement a proper endpoint
+    /*
     $.ajax({
         url: 'search-terms.php',
         dataType: 'json'
@@ -40,6 +43,7 @@ $(function ($) {
             }
         });
     });
+    */
     $('#header-search .search-field').on('focus', function () {
         $('#header-search .search-advance-button').fadeIn();
         $('#header-search .search-advance').slideDown();

@@ -233,6 +233,7 @@ class="nav-item d-none d-sm-inline-block active"
 		<div class="chart">
 			<canvas class="chart-data" id="tickets-graph" width="1000" height="250"></canvas>   
 		</div>
+		<div id="legendDiv"></div>
 	</div>
 </div>
 
@@ -376,7 +377,11 @@ class="nav-item d-none d-sm-inline-block active"
 									responsive: true
 
 								});
-								document.getElementById("legendDiv").innerHTML = myLineChart.generateLegend();
+								// Check if legendDiv exists before setting innerHTML
+								var legendDiv = document.getElementById("legendDiv");
+								if (legendDiv) {
+									legendDiv.innerHTML = myLineChart.generateLegend();
+								}
 							});
 							$('#click me').click(function () {
 								$('#foo').submit();
@@ -538,7 +543,11 @@ class="nav-item d-none d-sm-inline-block active"
 											//Boolean - whether to make the chart responsive to window resizing
 											responsive: true
 										});
-										document.getElementById("legendDiv").innerHTML = myLineChart1.generateLegend();
+										// Check if legendDiv exists before setting innerHTML
+										var legendDiv = document.getElementById("legendDiv");
+										if (legendDiv) {
+											legendDiv.innerHTML = myLineChart1.generateLegend();
+										}
 									}
 								});
 								// using the done promise callback

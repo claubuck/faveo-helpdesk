@@ -1001,6 +1001,7 @@ class ComposerStaticInit10c1836cea18dd9470bc2e97275d9d56
         'AWS\\CRT\\Options' => __DIR__ . '/..' . '/aws/aws-crt-php/src/AWS/CRT/Options.php',
         'Attribute' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+        'Database\\Seeders\\DatabaseSeeder' => __DIR__ . '/../..' . '/database/seeders/DatabaseSeeder.php',
         'Database\\Seeders\\v_2_0_0\\DatabaseSeeder' => __DIR__ . '/../..' . '/database/seeders/v_2_0_0/DatabaseSeeder.php',
         'Database\\Seeders\\v_2_0_0\\OutboundMailSeeder' => __DIR__ . '/../..' . '/database/seeders/v_2_0_0/OutboundMailSeeder.php',
         'Database\\Seeders\\v_2_0_0\\TicketSourceSeeder' => __DIR__ . '/../..' . '/database/seeders/v_2_0_0/TicketSourceSeeder.php',

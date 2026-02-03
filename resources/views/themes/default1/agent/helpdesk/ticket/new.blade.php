@@ -261,8 +261,15 @@ class="active"
                                 <label>{!! Lang::get('lang.priority') !!}:</label>
                             </div>
                             <div class="col-md-5">
-                                <?php $Priority = App\Model\helpdesk\Ticket\Ticket_Priority::where('status','=',1)->get(); ?>
-                                {!! Form::select('priority', [Lang::get('lang.priorities')=>$Priority->pluck('priority_desc','priority_id')->toArray()],null,['class' => 'form-control select']) !!}
+                                <?php
+                                $Priority = App\Model\helpdesk\Ticket\Ticket_Priority::where('status','=',1)->get();
+                                $priority_options = [Lang::get('lang.priorities') => []];
+                                foreach ($Priority as $p) {
+                                    $key = strtolower($p->priority_desc ?? $p->priority);
+                                    $priority_options[Lang::get('lang.priorities')][$p->priority_id] = Lang::get('lang.'.$key) !== 'lang.'.$key ? Lang::get('lang.'.$key) : $p->priority_desc;
+                                }
+                                ?>
+                                {!! Form::select('priority', $priority_options, null, ['class' => 'form-control select']) !!}
                             </div>
                             
                         </div>

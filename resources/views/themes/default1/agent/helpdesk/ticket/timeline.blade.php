@@ -138,14 +138,14 @@ if ($thread->title != "") {
 
             if ($group->can_edit_ticket == 1) {
                 ?>
-            <button type="button" class="btn btn-sm btn-default btn-tool">
+            <button type="button" class="btn btn-sm btn-default btn-tool" data-toggle="modal" data-target="#Edit">
 
                 <i class="fas fa-edit" style="color:green;"></i> {{trans('lang.edit')}}
 
             </button>            <?php } ?>
 
             <?php if ($group->can_assign_ticket == 1) { ?>
-            <button type="button" class="btn btn-sm btn-default btn-tool">
+            <button type="button" class="btn btn-sm btn-default btn-tool" data-toggle="modal" data-target="#assign{{$tickets->id}}">
 
                 <i class="fas fa-hand-point-right" style="color:orange;"></i> {{trans('lang.assign')}}
 
@@ -231,7 +231,7 @@ if ($thread->title != "") {
                     <b>{!! Lang::get('lang.sla_plan') !!}: {{$SlaPlan->grace_period}} </b>
                 </div>
                 <div class="col-md-3">
-                    <b>{!! Lang::get('lang.created_date') !!}: </b> {{ UTC::usertimezone($tickets->created_at) }}
+                    <b>{!! Lang::get('lang.created_date') !!}: </b> {{ UTC::userdate($tickets->created_at) }}
                 </div>
                 <div class="col-md-3">
                     <b>{!! Lang::get('lang.due_date') !!}: </b>
@@ -249,7 +249,25 @@ if ($thread->title != "") {
                     @foreach($response as $last)
                     <?php $ResponseDate = $last->created_at; ?>
                     @endforeach
-                    <b>{!! Lang::get('lang.last_response') !!}: </b> {{ UTC::usertimezone($ResponseDate) }}
+                    <b>{!! Lang::get('lang.last_response') !!}: </b> {{ UTC::userdate($ResponseDate) }}
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-md-6">
+                    <b>{!! Lang::get('lang.estimated_resolution_hours') !!}: </b>
+                    @if($tickets->estimated_resolution_hours !== null && $tickets->estimated_resolution_hours !== '')
+                        {{ number_format((float) $tickets->estimated_resolution_hours, 2, ',', '') }} h
+                    @else
+                        —
+                    @endif
+                </div>
+                <div class="col-md-6">
+                    <b>{!! Lang::get('lang.actual_resolution_hours') !!}: </b>
+                    @if($tickets->actual_resolution_hours !== null && $tickets->actual_resolution_hours !== '')
+                        {{ number_format((float) $tickets->actual_resolution_hours, 2, ',', '') }} h
+                    @else
+                        —
+                    @endif
                 </div>
             </div>
         </div>
@@ -894,6 +912,18 @@ if ($thread->title != "") {
                                         @endforeach
                                     </select>
                                     <spam id="error-priority" style="display:none" class="help-block text-red">This is a required field</spam>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>{!! Lang::get('lang.estimated_resolution_hours') !!}</label>
+                                    <input type="number" name="estimated_resolution_hours" class="form-control" id="edit_estimated_resolution_hours" value="{{ $tickets->estimated_resolution_hours !== null ? $tickets->estimated_resolution_hours : '' }}" placeholder="ej. 2.5" step="0.01" min="0">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>{!! Lang::get('lang.actual_resolution_hours') !!}</label>
+                                    <input type="number" name="actual_resolution_hours" class="form-control" id="edit_actual_resolution_hours" value="{{ $tickets->actual_resolution_hours !== null ? $tickets->actual_resolution_hours : '' }}" placeholder="ej. 3" step="0.01" min="0">
                                 </div>
                             </div>
                         </div>
@@ -1577,39 +1607,86 @@ if ($thread->title != "") {
     })
             return false;
     });
-// Assign a ticket
-            $('#form1').on('submit', function() {
-    $.ajax({
-    type: "POST",
-            url: "../ticket/assign/{{ $tickets->id }}",
-            dataType: "html",
-            data: $(this).serialize(),
-            beforeSend: function() {
-            $("#assign_body").hide();
-                    $("#assign_loader").show();
-            },
-            success: function(response) {
-            if (response == 1)
-            {
-            // $("#assign_body").show();
-            // var message = "Success";
-            // $('#message-success1').html(message);
-            // setInterval(function(){$("#alert11").hide(); },4000);   
-            location.reload();
-            var message = "Success!";
-                    $("#alert10").css('display','block');
-                    $('#message-success0').html(message);
-                    setInterval(function(){$("#dismiss10").trigger("click"); }, 2000);
-            }
-            $("#assign_body").show();
-                    $("#assign_loader").hide();
-                    $("#dismis4").trigger("click");
-                    // $("#RefreshAssign").load( "../thread/{{$tickets->id}} #RefreshAssign");
-                    // $("#General").load( "../thread/{{$tickets->id}} #General");
-            }
-    })
-            return false;
-    });
+// Assign a ticket - Using event delegation to handle dynamically loaded modals
+            $(document).on('submit', '#form1', function(e) {
+                e.preventDefault(); // Prevent default form submission
+                e.stopPropagation(); // Stop event bubbling
+                
+                var $form = $(this);
+                var formData = $form.serialize();
+                var csrfToken = $('meta[name="_token"]').attr('content');
+                
+                // Add CSRF token and method override for PATCH
+                if (formData.indexOf('_token') === -1) {
+                    formData += '&_token=' + csrfToken;
+                }
+                if (formData.indexOf('_method') === -1) {
+                    formData += '&_method=PATCH';
+                }
+                
+                $.ajax({
+                    type: "POST",
+                    url: "../ticket/assign/{{ $tickets->id }}",
+                    dataType: "html",
+                    data: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    beforeSend: function() {
+                        $("#assign_body").hide();
+                        $("#assign_loader").show();
+                        $("#assign_alert").hide();
+                    },
+                    success: function(response) {
+                        // Trim response to handle whitespace
+                        response = $.trim(response);
+                        
+                        if (response == 1 || response == "1")
+                        {
+                            var message = "{{Lang::get('lang.success')}}!";
+                            $("#alert10").css('display','block');
+                            $('#message-success0').html(message);
+                            
+                            // Close modal
+                            $("#dismis4").trigger("click");
+                            
+                            // Reload after a short delay to show the success message
+                            setTimeout(function() {
+                                location.reload();
+                            }, 1000);
+                        } else {
+                            // Show error message if assignment failed
+                            var errorMessage = "{{Lang::get('lang.error-occurred')}}";
+                            $("#assign_alert").removeClass('alert-success').addClass('alert-danger');
+                            $("#assign_alert").css('display','block');
+                            $('#message-success1').html(errorMessage);
+                            $("#assign_body").show();
+                            $("#assign_loader").hide();
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        // Handle AJAX errors
+                        console.error('Error assigning ticket:', error, xhr);
+                        var errorMessage = "{{Lang::get('lang.error-occurred')}}";
+                        if (xhr.responseText) {
+                            try {
+                                var errorData = JSON.parse(xhr.responseText);
+                                if (errorData.message) {
+                                    errorMessage = errorData.message;
+                                }
+                            } catch(e) {
+                                // Use default error message
+                            }
+                        }
+                        $("#assign_alert").removeClass('alert-success').addClass('alert-danger');
+                        $("#assign_alert").css('display','block');
+                        $('#message-success1').html(errorMessage);
+                        $("#assign_body").show();
+                        $("#assign_loader").hide();
+                    }
+                });
+                return false;
+            });
             // Change owner of a ticket
             $('#form4').on('submit', function() {
     $.ajax({
