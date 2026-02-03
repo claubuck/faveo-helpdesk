@@ -77,6 +77,13 @@ class PhpMailController extends Controller
 
     public function sendmail($from, $to, $message, $template_variables)
     {
+        // Check if recipient email is null or empty before queuing
+        $recipient_email = $this->checkElement('email', $to);
+        if (empty($recipient_email) || $recipient_email === null) {
+            logger()->warning('Cannot queue email: recipient email is null or empty', ['to' => $to]);
+            return false;
+        }
+        
         $this->setQueue();
         $job = new \App\Jobs\SendEmail($from, $to, $message, $template_variables);
         $this->dispatch($job);
@@ -93,6 +100,12 @@ class PhpMailController extends Controller
 
         $recipants = $this->checkElement('email', $to);
         $recipantname = $this->checkElement('name', $to);
+        
+        // Check if recipient email is null or empty
+        if (empty($recipants) || $recipants === null) {
+            logger()->warning('Cannot send email: recipient email is null or empty');
+            return false;
+        }
         $cc = $this->checkElement('cc', $to);
         $bc = $this->checkElement('bc', $to);
         $subject = $this->checkElement('subject', $message);
