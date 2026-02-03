@@ -315,6 +315,11 @@ class="nav-link active"
 
                     @if(Auth::user()->role == 'agent')
                     @if($users->role == 'user')
+                    <div class="btn-group">
+                        <button type="button" href="#myPopup" data-rel="popup" class="btn btn-default btn-sm" data-toggle="modal" 
+                            data-target="#addNewCategoryModal1">{{Lang::get('lang.change_role_to_agent')}}</button>
+                    </div>
+                    
                     <a href="{{route('user.edit', $users->id)}}">
                         <button type="button"  href="{{route('user.edit', $users->id)}}" class="btn btn-default btn-sm">{{Lang::get('lang.edit')}}</button>
                     </a>
@@ -324,6 +329,22 @@ class="nav-link active"
 
                     <button type="button" href="#myPopup" data-rel="popup" class="btn btn-default btn-sm" data-toggle="modal" 
                         data-target="#addNewCategoryModal3">{{Lang::get('lang.delete')}}</button>
+                    @elseif($users->role == 'agent')
+                    {{-- Allow agents to delete other agents --}}
+                    <a href="{{route('user.edit', $users->id)}}">
+                        <button type="button"  href="{{route('user.edit', $users->id)}}" class="btn btn-default btn-sm">{{Lang::get('lang.edit')}}</button>
+                    </a>
+
+                    <button type="button" href="#myPopup" data-rel="popup" class="btn btn-default btn-sm" data-toggle="modal" 
+                        data-target="#addNewCategoryModal">{{Lang::get('lang.change_password')}}</button>
+
+                    <button type="button" href="#myPopup" data-rel="popup" class="btn btn-default btn-sm" data-toggle="modal" 
+                        data-target="#addNewCategoryModal3">{{Lang::get('lang.delete')}}</button>
+                    @else
+                    {{-- Cannot delete admins --}}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i> {{Lang::get('lang.only_admins_can_delete_admin_users')}}
+                    </div>
                     @endif
                     @endif
 

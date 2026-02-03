@@ -189,7 +189,7 @@
 
                     <li class="nav-item dropdown notifications-menu" id="myDropdown">
 
-                        <a href="#" class="nav-link" data-toggle="dropdown" onclick="myFunction()">
+                        <a href="#" class="nav-link" data-toggle="dropdown">
                             
                             <i class="nav-icon  fas fa-bell"></i>
                             
@@ -755,7 +755,39 @@
                     });</script>
 
         <script src="{{asset("lb-faveo/js/languagechanger.js")}}" type="text/javascript"></script>
-        <script src="{{asset("lb-faveo/plugins/filebrowser/plugin.js")}}" type="text/javascript"></script>
+        <script type="text/javascript">
+            // Load filebrowser plugin only if CKEDITOR is available
+            // This prevents the "CKEDITOR is not defined" error when CKEDITOR is not loaded
+            (function() {
+                function loadFilebrowserPlugin() {
+                    if (typeof CKEDITOR !== 'undefined') {
+                        var script = document.createElement('script');
+                        script.src = "{{asset('lb-faveo/plugins/filebrowser/plugin.js')}}";
+                        script.type = 'text/javascript';
+                        document.head.appendChild(script);
+                    }
+                }
+                
+                // Try to load immediately if CKEDITOR is already available
+                if (typeof CKEDITOR !== 'undefined') {
+                    loadFilebrowserPlugin();
+                } else {
+                    // Wait for CKEDITOR to be loaded (check every 100ms for up to 5 seconds)
+                    var attempts = 0;
+                    var maxAttempts = 50;
+                    var checkInterval = setInterval(function() {
+                        attempts++;
+                        if (typeof CKEDITOR !== 'undefined') {
+                            clearInterval(checkInterval);
+                            loadFilebrowserPlugin();
+                        } else if (attempts >= maxAttempts) {
+                            clearInterval(checkInterval);
+                            // CKEDITOR not loaded, skip plugin loading
+                        }
+                    }, 100);
+                }
+            })();
+        </script>
 
         <script type="text/javascript">
                     $.ajaxSetup({
