@@ -1098,6 +1098,10 @@ return [
     'created_date'                                   => 'Fecha de creación',
     'due_date'                                       => 'fecha de vencimiento',
     'last_response'                                  => 'Última respuesta',
+    'estimated_resolution_date'                       => 'Fecha de resolución estimada',
+    'actual_resolution_date'                         => 'Fecha de resolución real',
+    'estimated_resolution_hours'                     => 'Horas estimadas de resolución',
+    'actual_resolution_hours'                        => 'Horas reales de resolución',
     'source'                                         => 'Fuente',
     'last_message'                                   => 'Ultimo mensaje',
     'reply'                                          => 'Respuesta',
@@ -1372,6 +1376,7 @@ Puede ingresar el número de días de registros de base de datos que se eliminar
     'create_account'                                                                   => 'Crear una cuenta',
     'you_are_here'                                                                     => 'Estás aquí',
     'have_a_ticket'                                                                    => 'Tengo un ticket',
+    'check_ticket'                                                                     => 'Ver ticket',
     'check_ticket_status'                                                              => 'Compruebe el estado del ticket',
     'choose_a_help_topic'                                                              => 'Elija un tema de ayuda',
     'ticket_status'                                                                    => 'Estado del ticket',
@@ -1584,7 +1589,7 @@ Puede ingresar el número de días de registros de base de datos que se eliminar
     /* updates 2-12-2016 **/
     'sort-by'                      => 'Ordenar por',
     'created-at'                   => 'Creado en',
-    'or'                           => 'OR',
+    'or'                           => 'o',
     'activate'                     => 'Activar',
     'system-email-not-configured'  => 'No podemos procesar la solicitud de correo electrónico porque el sistema no tiene correo configurado para enviar correos. Comuníquese con el administrador del sistema.',
     'assign-ticket'                => 'Asignar tickets',
@@ -1670,4 +1675,5 @@ Puede ingresar el número de días de registros de base de datos que se eliminar
     //updated 10-10-2023
     'what_should_be_done_with_content_owned_by_this_user' => '¿Qué se debe hacer con el contenido propiedad de este usuario',
     'ticket_conversation'                                 => 'Conversación del Ticket',
+    'already_got_an_account?'                             => '¿Ya tienes una cuenta?',
 ];
