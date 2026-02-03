@@ -542,7 +542,7 @@ class UserController extends Controller
                         $thread->ticket_id = $ticket->id;
                         $thread->user_id = Auth::user()->id;
                         $thread->is_internal = 1;
-                        $thread->body = 'This Ticket has been assigned to '.$assignee;
+                        $thread->body = 'El ticket se asigno correctamente a '.$assignee;
                         $thread->save();
                     }
                     $user = User::find($id);
@@ -693,7 +693,18 @@ class UserController extends Controller
                 }
             }
             $users->mobile = ($request->input('mobile') == '') ? null : $request->input('mobile');
-            $users->fill($request->except('mobile', 'active', 'role', 'is_delete', 'ban'));
+            $users->fill($request->except('mobile', 'role', 'is_delete'));
+            
+            // Process active status - ensure it's set correctly
+            if ($request->has('active')) {
+                $users->active = $request->input('active');
+            }
+            
+            // Process ban status - ensure it's set correctly
+            if ($request->has('ban')) {
+                $users->ban = $request->input('ban');
+            }
+            
             $users->save();
             if ($request->input('org_id') != '') {
                 $orgid = $request->input('org_id');
