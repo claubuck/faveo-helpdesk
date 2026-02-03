@@ -249,10 +249,21 @@ class TicketController extends Controller
         $avg_rate = explode('.', $avg);
         $avg_rating = $avg_rate[0];
         $thread = Ticket_Thread::where('ticket_id', '=', $id)->first();
-        $fileupload = new FileuploadController();
-        $fileupload = $fileupload->file_upload_max_size();
-        $max_size_in_bytes = $fileupload[0];
-        $max_size_in_actual = $fileupload[1];
+        $fileuploadController = new FileuploadController();
+        $fileupload = $fileuploadController->file_upload_max_size();
+        
+        // Validate that the array has the required elements
+        if (!is_array($fileupload) || count($fileupload) < 2 || !isset($fileupload[0]) || !isset($fileupload[1])) {
+            \Log::warning('file_upload_max_size returned invalid array in thread(), using defaults');
+            // Fallback to default values if array is invalid
+            $upload_max = ini_get('upload_max_filesize');
+            $post_max = ini_get('post_max_size');
+            $max_size_in_bytes = $fileuploadController->parse_size($upload_max ?: $post_max ?: '2M');
+            $max_size_in_actual = $upload_max ?: $post_max ?: '2M';
+        } else {
+            $max_size_in_bytes = $fileupload[0];
+            $max_size_in_actual = $fileupload[1];
+        }
         $tickets_approval = Tickets::where('id', '=', $id)->first();
 
         return view('themes.default1.agent.helpdesk.ticket.timeline', compact('tickets', 'max_size_in_bytes', 'max_size_in_actual', 'tickets_approval'), compact('thread', 'avg_rating'));
@@ -301,6 +312,11 @@ class TicketController extends Controller
 
         try {
             if (is_array($request->file('attachment'))) {
+                try {
+                    $size = $this->size();
+                } catch (Exception $ex) {
+                    return $ex->getMessage();
+                }
             } else {
                 try {
                     $size = $this->size();
@@ -309,10 +325,21 @@ class TicketController extends Controller
                 }
             }
 
-            $fileupload = new FileuploadController();
-            $fileupload = $fileupload->file_upload_max_size();
-            $max_size_in_bytes = $fileupload[0];
-            $max_size_in_actual = $fileupload[1];
+            $fileuploadController = new FileuploadController();
+            $fileupload = $fileuploadController->file_upload_max_size();
+            
+            // Validate that the array has the required elements
+            if (!is_array($fileupload) || count($fileupload) < 2 || !isset($fileupload[0]) || !isset($fileupload[1])) {
+                \Log::warning('file_upload_max_size returned invalid array, using defaults');
+                // Fallback to default values if array is invalid - use FileuploadController's parse_size method
+                $upload_max = ini_get('upload_max_filesize');
+                $post_max = ini_get('post_max_size');
+                $max_size_in_bytes = $fileuploadController->parse_size($upload_max ?: $post_max ?: '2M');
+                $max_size_in_actual = $upload_max ?: $post_max ?: '2M';
+            } else {
+                $max_size_in_bytes = $fileupload[0];
+                $max_size_in_actual = $fileupload[1];
+            }
 
             $attachments = $request->file('attachment');
             $check_attachment = null;
@@ -486,6 +513,12 @@ class TicketController extends Controller
             $ticket->priority_id = Input::get('ticket_priority');
             $dept = Help_topic::select('department')->where('id', '=', $ticket->help_topic_id)->first();
             $ticket->dept_id = $dept->department;
+
+            $estimated = Input::get('estimated_resolution_hours');
+            $actual = Input::get('actual_resolution_hours');
+            $ticket->estimated_resolution_hours = ($estimated !== null && $estimated !== '' && is_numeric(str_replace(',', '.', $estimated))) ? (float) str_replace(',', '.', $estimated) : null;
+            $ticket->actual_resolution_hours = ($actual !== null && $actual !== '' && is_numeric(str_replace(',', '.', $actual))) ? (float) str_replace(',', '.', $actual) : null;
+
             $ticket->save();
 
             $threads = $thread->where('ticket_id', '=', $ticket_id)->first();
@@ -505,6 +538,7 @@ class TicketController extends Controller
      */
     public function ticket_print($id)
     {
+        // Get ticket with basic info
         $tickets = Tickets::leftJoin('ticket_thread', function ($join) {
             $join->on('tickets.id', '=', 'ticket_thread.ticket_id')
                         ->whereNotNull('ticket_thread.title');
@@ -514,8 +548,28 @@ class TicketController extends Controller
                 ->where('tickets.id', '=', $id)
                 ->select('ticket_thread.title', 'tickets.ticket_number', 'department.name as department', 'help_topic.topic as helptopic')
                 ->first();
-        $ticket = Tickets::where('tickets.id', '=', $id)->first();
+        
+        // Get full ticket with relationships
+        $ticket = Tickets::with('thread')->where('tickets.id', '=', $id)->first();
+        
+        // Check if ticket exists
+        if (!$ticket) {
+            abort(404, 'Ticket not found');
+        }
+        
+        // If $tickets is null, create a basic object with ticket number
+        if (!$tickets) {
+            $tickets = (object) [
+                'title' => $ticket->thread->first()->title ?? 'No Title',
+                'ticket_number' => $ticket->ticket_number,
+                'department' => null,
+                'helptopic' => null
+            ];
+        }
+        
         $html = view('themes.default1.agent.helpdesk.ticket.pdf', compact('id', 'ticket', 'tickets'))->render();
+        
+        // Convert encoding for dompdf compatibility
         $html1 = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
 
         /**
@@ -524,7 +578,27 @@ class TicketController extends Controller
          * @see https://github.com/dompdf/dompdf/issues/1272
          * For time bieng we are silencing the error using "@" operator in front of it
          */
-        return PdfFacade::load($html1)->show(false, false, false);
+        // Generate PDF output
+        try {
+            $pdf = PdfFacade::load($html1);
+            $pdf->setPaper('a4', 'portrait');
+            $pdf->render();
+            $output = $pdf->output(true); // Use compression
+            
+            // Return response with proper headers
+            $filename = 'ticket-' . ($ticket->ticket_number ?? $id) . '.pdf';
+            
+            return response($output, 200)
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'inline; filename="' . $filename . '"')
+                ->header('Content-Length', strlen($output))
+                ->header('Cache-Control', 'private, max-age=0, must-revalidate')
+                ->header('Pragma', 'public');
+        } catch (\Exception $e) {
+            // Log error for debugging
+            \Log::error('PDF Generation Error: ' . $e->getMessage());
+            abort(500, 'Error generating PDF: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -1402,7 +1476,7 @@ class TicketController extends Controller
                 $thread->ticket_id = $ticket->id;
                 $thread->user_id = Auth::user()->id;
                 $thread->is_internal = 1;
-                $thread->body = 'This Ticket has been assigned to '.$assignee;
+                $thread->body = 'El ticket se asigno correctamente a '.$assignee;
                 $thread->save();
             } elseif ($assign_to[0] == 'user') {
                 $ticket->assigned_to = $assign_to[1];
@@ -1424,7 +1498,7 @@ class TicketController extends Controller
                 $thread->ticket_id = $ticket->id;
                 $thread->user_id = Auth::user()->id;
                 $thread->is_internal = 1;
-                $thread->body = 'This Ticket has been assigned to '.$assignee;
+                $thread->body = 'El ticket se asigno correctamente a '.$assignee;
                 $thread->save();
 
                 $agent = $user_detail->first_name;
@@ -1482,7 +1556,7 @@ class TicketController extends Controller
     public function surrender($id)
     {
         $ticket = Tickets::where('id', '=', $id)->first();
-        $InternalContent = Auth::user()->first_name.' '.Auth::user()->last_name.' has Surrendered the assigned Ticket';
+        $InternalContent = Auth::user()->first_name.' '.Auth::user()->last_name.' ha entregado el Ticket asignado';
         $thread = Ticket_Thread::where('ticket_id', '=', $id)->first();
         $NewThread = new Ticket_Thread();
         $NewThread->ticket_id = $thread->ticket_id;
@@ -1853,6 +1927,27 @@ class TicketController extends Controller
         $offset = date('Z', strtotime($utc));
         $format = Date_time_format::whereId($format)->first()->format;
         $date = date($format, strtotime($utc) + $offset);
+
+        return $date;
+    }
+
+    /**
+     * Return only the date (d/m/Y) in user timezone for display in ticket info block.
+     *
+     * @param string|null $utc
+     * @return string
+     */
+    public static function userdate($utc)
+    {
+        if (!$utc) {
+            return '—';
+        }
+        $set = System::whereId('1')->first();
+        $timezone = Timezones::whereId($set->time_zone)->first();
+        $tz = $timezone->name;
+        date_default_timezone_set($tz);
+        $offset = date('Z', strtotime($utc));
+        $date = date('d/m/Y', strtotime($utc) + $offset);
 
         return $date;
     }
@@ -2481,7 +2576,20 @@ class TicketController extends Controller
              * @see https://github.com/dompdf/dompdf/issues/1272
              * For time bieng we are silencing the error using "@" operator in front of it
              */
-            return PdfFacade::load($html1)->show(false, false, false);
+            // Generate PDF output
+            $pdf = PdfFacade::load($html1);
+            $pdf->render();
+            $output = $pdf->output(false);
+            
+            // Return response with proper headers
+            $filename = 'thread-' . ($thread->id ?? $threadid) . '.pdf';
+            
+            return response($output, 200)
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'inline; filename="' . $filename . '"')
+                ->header('Content-Length', strlen($output))
+                ->header('Cache-Control', 'private, max-age=0, must-revalidate')
+                ->header('Pragma', 'public');
         } catch (Exception $ex) {
             return redirect()->back()->with('fails', $ex->getMessage());
         }
