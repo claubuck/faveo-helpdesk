@@ -547,6 +547,10 @@
                             </li>
 
                             <li class="nav-item d-none d-sm-inline-block">
+                              <a href="{{ url('/tickets?show=approval') }}" @yield('approval') class="nav-link" id="load-approval">{!! Lang::get('lang.approval') !!}</a>
+                            </li>
+
+                            <li class="nav-item d-none d-sm-inline-block">
                               <a href="{{ url('/tickets?show=closed') }}" @yield('closed') class="nav-link">{!! Lang::get('lang.closed') !!}</a>
                             </li>
 
