@@ -158,6 +158,10 @@ function faveotime($date, $hour = 0, $min = 0, $sec = 0)
  */
 function getStatusArray($status)
 {
+    // Status 7 = Request Approval (Aprobación) - not tied to a unique 'state' in ticket_status
+    if ($status === 'approval') {
+        return [7];
+    }
     $type = new App\Model\helpdesk\Ticket\Ticket_Status();
     $values = $type->where('state', '=', $status)->pluck('id')->toArray();
 
