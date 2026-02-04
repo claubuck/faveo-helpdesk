@@ -173,6 +173,10 @@ if ($thread->title != "") {
                 <div class="dropdown-menu">
                     <a href="#" id="open" class="dropdown-item"><i class="fas fa-folder-open" style="color:red;"> </i> {!! Lang::get('lang.open') !!}</a>
 
+                    <?php if ( $tickets_approval->status != 7 && $group->can_edit_ticket == 1) { ?>
+                    <a href="#" id="send_for_approval" class="dropdown-item"><i class="fas fa-paper-plane" style="color:orange;"> </i> {!! Lang::get('lang.send_for_approval') !!}</a>
+                    <?php } ?>
+
                     <?php if ( $tickets_approval->status==7) {?>
                   @if(Auth::user()->role == 'admin')
                      <a href="#" id="approval_close" class="dropdown-item"><i class="fas fa-thumbs-up" style="color:red;"> </i> {!! Lang::get('lang.approval') !!}</a>
@@ -1507,6 +1511,29 @@ if ($thread->title != "") {
                     location.reload();
             }
     })
+            return false;
+    });
+            // Send ticket for approval (status 7)
+            $('#send_for_approval').on('click', function(e) {
+    $.ajax({
+    type: "POST",
+            url: "../ticket/send-for-approval/{{$tickets->id}}",
+            beforeSend: function() {
+            $("#hide2").hide();
+                    $("#show2").show();
+            },
+            success: function(response) {
+            $("#refresh").load("../thread/{{$tickets->id}}   #refresh");
+                    $("#d1").trigger("click");
+                    $("#hide2").show();
+                    $("#show2").hide();
+                    var message = "{!! Lang::get('lang.your_ticket_have_been_sent_for_approval') !!}";
+                    $("#alert10").css('display','block');
+                    $('#message-success0').html(message);
+                    setInterval(function(){ $("#alert10").css('display','none'); }, 4000);
+                    location.reload();
+            }
+    });
             return false;
     });
             // delete a ticket
