@@ -1372,6 +1372,46 @@ class TicketController extends Controller
     }
 
     /**
+     * Send ticket to approval (status 7 - Request Approval).
+     * Only agents/admins can send a ticket for approval.
+     *
+     * @param type $id
+     * @param type Tickets $ticket
+     *
+     * @return type string
+     */
+    public function sendForApproval($id, Tickets $ticket)
+    {
+        if (Auth::user()->role == 'user') {
+            return redirect()->route('unauth');
+        }
+        $ticket_status = $ticket->where('id', '=', $id)->first();
+        if ($ticket_status == null) {
+            return redirect()->route('unauth');
+        }
+        $ticket_status->status = 7;
+        $ticket_status->save();
+        $ticket_status_message = Ticket_Status::where('id', '=', 7)->first();
+        if ($ticket_status_message) {
+            $thread = new Ticket_Thread();
+            $thread->ticket_id = $ticket_status->id;
+            $thread->user_id = Auth::user()->id;
+            $thread->is_internal = 1;
+            $thread->body = $ticket_status_message->message.' '.Auth::user()->first_name.' '.Auth::user()->last_name;
+            $thread->save();
+        }
+        $data = [
+            'id'         => $ticket_status->ticket_number,
+            'status'     => 'Request Approval',
+            'first_name' => Auth::user()->first_name,
+            'last_name'  => Auth::user()->last_name,
+        ];
+        event('change-status', [$data]);
+
+        return Lang::get('lang.your_ticket_have_been_sent_for_approval');
+    }
+
+    /**
      * Function to delete ticket.
      *
      * @param type $id
