@@ -940,6 +940,8 @@ return [
     'your_ticket_have_been_closed'                                       => 'Your ticket has been closed',
     'your_ticket_have_been_resolved'                                     => 'Your ticket has been resolved',
     'your_ticket_have_been_opened'                                       => 'Your ticket has been opened',
+    'send_for_approval'                                                  => 'Send for approval',
+    'your_ticket_have_been_sent_for_approval'                            => 'Your ticket has been sent for approval',
     'your_ticket_have_been_moved_to_trash'                               => 'Your ticket has been moved to trash',
     'this_email_have_been_banned'                                        => 'This email has been banned',
     'ticket_updated_successfully'                                        => 'Ticket updated successfully',
