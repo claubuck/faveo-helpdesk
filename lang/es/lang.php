@@ -957,6 +957,8 @@ return [
     'your_ticket_have_been_closed'                                       => 'Su ticket ha sido cerrado',
     'your_ticket_have_been_resolved'                                     => 'Su ticket ha sido resuelto',
     'your_ticket_have_been_opened'                                       => 'Your ticket has been opened',
+    'send_for_approval'                                                  => 'Enviar a aprobación',
+    'your_ticket_have_been_sent_for_approval'                            => 'El ticket ha sido enviado a aprobación',
     'your_ticket_have_been_moved_to_trash'                               => 'Tu ticket se ha trasladado a la papelera',
     'this_email_have_been_banned'                                        => 'Se ha prohibido este correo electrónico.',
     'ticket_updated_successfully'                                        => 'Ticket actualizado con éxito',
