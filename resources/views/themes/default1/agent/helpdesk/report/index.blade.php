@@ -374,6 +374,16 @@ class="active"
 
                                 });
 //                                document.getElementById("legendDiv").innerHTML = myLineChart.generateLegend();
+                                if ($('#tabular thead th').length) {
+                                    $('#tabular').DataTable({
+                                        "paging": true,
+                                        "lengthChange": false,
+                                        "searching": false,
+                                        "ordering": true,
+                                        "info": true,
+                                        "autoWidth": false
+                                    });
+                                }
                             });
                             $('#click_day').click(function() {
                                 $('#click_week').removeClass('btn-primary');
@@ -464,6 +474,10 @@ class="active"
 
                                     success: function(result2) {
                                         window.result1a = result2;
+                                        if ($.fn.DataTable.isDataTable('#tabular')) {
+                                            $('#tabular').DataTable().destroy();
+                                            $('#tabular').empty();
+                                        }
                                         var tableRef = document.getElementById('tabular');
                                         while (tableRef.rows.length > 0)
                                         {
@@ -651,6 +665,16 @@ class="active"
                                             responsive: true
                                         });
 //                                        document.getElementById("legendDiv").innerHTML = myLineChart1.generateLegend();
+                                        if ($('#tabular thead th').length) {
+                                            $('#tabular').DataTable({
+                                                "paging": true,
+                                                "lengthChange": false,
+                                                "searching": false,
+                                                "ordering": true,
+                                                "info": true,
+                                                "autoWidth": false
+                                            });
+                                        }
                                     }
                                 });
                                 // using the done promise callback
@@ -666,19 +690,6 @@ class="active"
 //                                });
                             });
                         });
-</script>
-<script>
-  $(function () {
-//    $("#tabular").DataTable();
-    $('#tabular').DataTable({
-      "paging": true,
-      "lengthChange": false,
-      "searching": false,
-      "ordering": true,
-      "info": true,
-      "autoWidth": false
-    });
-  });
 </script>
 <script type="text/javascript">
     jQuery(document).ready(function() {
