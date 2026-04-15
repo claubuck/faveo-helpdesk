@@ -42,6 +42,15 @@ class RegisterController extends Controller
     }
 
     /**
+     * Faveo registration uses auth/register with CommonSettings; Laravel UI's
+     * default GET /register would render the same Blade without variables.
+     */
+    public function showRegistrationForm()
+    {
+        return redirect()->route('auth.register');
+    }
+
+    /**
      * Get a validator for an incoming registration request.
      *
      * @param array $data

@@ -1540,6 +1540,10 @@ Puede ingresar el número de días de registros de base de datos que se eliminar
     'close_all_ticket_for_approval'          => 'Cerrar todas las entradas para su aprobación',
     'approval_settings-created-successfully' => 'Configuración de aprobación creada correctamente',
 
+    'in_progress'           => 'En curso',
+    'in progress'           => 'En curso',
+    'tickets_have_been_set_in_progress' => 'Los tickets se han establecido en curso',
+
     /* --------------------------------------------------------------------------------------------
      * Followup Updated
      * --------------------------------------------------------------------------------------------

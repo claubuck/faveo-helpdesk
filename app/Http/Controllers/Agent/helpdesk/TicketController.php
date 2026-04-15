@@ -180,7 +180,7 @@ class TicketController extends Controller
             }
             //create user
             $result = $this->create_user($email, $fullname, $subject, $body, $phone, $phonecode, $mobile_number, $helptopic, $sla, $priority, $source->id, $headers, $help->department, $assignto, $form_data, $auto_response, $status, $duedate);
-            if ($result[1]) {
+            if (is_array($result) && isset($result[1]) && $result[1]) {
                 $status = $this->checkUserVerificationStatus();
                 if ($status == 1) {
                     if ($api != false) {
@@ -276,8 +276,11 @@ class TicketController extends Controller
         if (!$files) {
             return $size;
         }
-        if (count($files) > 0) {
-            foreach ($files as $file) {
+        if (!is_array($files)) {
+            $files = [$files];
+        }
+        foreach ($files as $file) {
+            if ($file && is_object($file) && method_exists($file, 'getSize')) {
                 $size += $file->getSize();
             }
         }
@@ -342,6 +345,9 @@ class TicketController extends Controller
             }
 
             $attachments = $request->file('attachment');
+            if ($attachments !== null && !is_array($attachments)) {
+                $attachments = [$attachments];
+            }
             $check_attachment = null;
             // Event fire
             $eventthread = $thread->where('ticket_id', $request->input('ticket_ID'))->first();
@@ -808,8 +814,14 @@ class TicketController extends Controller
         event(new \App\Events\ClientTicketFormPost($from_data, $emailadd, $source));
         $ticket_number = $this->check_ticket($user_id, $subject, $body, $helptopic, $sla, $priority, $source, $headers, $dept, $assignto, $from_data, $status, $duedate);
 
+        if (!is_array($ticket_number) || !array_key_exists(0, $ticket_number) || !array_key_exists(1, $ticket_number)) {
+            return ['0' => '', '1' => false];
+        }
         $ticket_number2 = $ticket_number[0];
         $ticketdata = Tickets::where('ticket_number', '=', $ticket_number2)->first();
+        if (!$ticketdata) {
+            return ['0' => '', '1' => false];
+        }
         $threaddata = Ticket_Thread::where('ticket_id', '=', $ticketdata->id)->first();
         $is_reply = $ticket_number[1];
         //dd($source);
@@ -954,6 +966,8 @@ class TicketController extends Controller
 
             return ['0' => $ticket_number2, '1' => true];
         }
+
+        return ['0' => $ticket_number2 ?? '', '1' => false];
     }
 
     /**
@@ -1013,7 +1027,7 @@ class TicketController extends Controller
             $find_number = Tickets::where('ticket_number', '=', $new_subject)->first();
             $thread_body = explode('---Reply above this line---', $body);
             $body = $thread_body[0];
-            if ($find_number->count() > 0) {
+            if ($find_number) {
                 $id = $find_number->id;
                 $ticket_number = $find_number->ticket_number;
                 if ($find_number->status > 1) {
@@ -1055,6 +1069,7 @@ class TicketController extends Controller
                         //                        event fire for reply [$subject, $body, $id, $user_id]
                         return [$ticket_number, 1];
                     }
+                    return [$ticket_number, 0];
                 }
             } else {
                 $ticket_number = $this->createTicket($user_id, $subject, $body, $helptopic, $sla, $priority, $source, $headers, $dept, $assignto, $form_data, $status, $duedate);
@@ -1409,6 +1424,48 @@ class TicketController extends Controller
         event('change-status', [$data]);
 
         return Lang::get('lang.your_ticket_have_been_sent_for_approval');
+    }
+
+    /**
+     * Set ticket status to In progress (status 8 - En curso).
+     *
+     * @param type $id
+     * @param type Tickets $ticket
+     *
+     * @return type string
+     */
+    public function setInProgress($id, Tickets $ticket)
+    {
+        if (Auth::user()->role == 'user') {
+            return redirect()->route('unauth');
+        }
+        $ticket_status = $ticket->where('id', '=', $id)->first();
+        if ($ticket_status == null) {
+            return redirect()->route('unauth');
+        }
+        $ticket_status->status = 8;
+        $ticket_status->save();
+        $ticket_status_message = Ticket_Status::where('id', '=', 8)->first();
+        if ($ticket_status_message) {
+            $thread = new Ticket_Thread();
+            $thread->ticket_id = $ticket_status->id;
+            $thread->user_id = Auth::user()->id;
+            $thread->is_internal = 1;
+            $name = Auth::user()->first_name && Auth::user()->last_name
+                ? Auth::user()->first_name.' '.Auth::user()->last_name
+                : Auth::user()->user_name;
+            $thread->body = $ticket_status_message->message.' '.$name;
+            $thread->save();
+        }
+        $data = [
+            'id'         => $ticket_status->ticket_number,
+            'status'     => 'In progress',
+            'first_name' => Auth::user()->first_name,
+            'last_name'  => Auth::user()->last_name,
+        ];
+        event('change-status', [$data]);
+
+        return Lang::get('lang.in_progress');
     }
 
     /**
@@ -1894,6 +1951,8 @@ class TicketController extends Controller
                     $this->resolve($delete, new Tickets());
                 } elseif ($value == 'Open') {
                     $this->open($delete, new Tickets());
+                } elseif ($value == 'In progress') {
+                    $this->setInProgress($delete, new Tickets());
                 } elseif ($value == 'Delete forever') {
                     $notification = Notification::select('id')->where('model_id', '=', $ticket->id)->get();
                     foreach ($notification as $id) {
@@ -1942,6 +2001,8 @@ class TicketController extends Controller
                 return redirect()->back()->with('success', Lang::get('lang.tickets_have_been_closed'));
             } elseif ($value == 'Open') {
                 return redirect()->back()->with('success', Lang::get('lang.tickets_have_been_opened'));
+            } elseif ($value == 'In progress') {
+                return redirect()->back()->with('success', Lang::get('lang.tickets_have_been_set_in_progress'));
             } else {
                 return redirect()->back()->with('success', Lang::get('lang.hard-delete-success-message'));
             }
@@ -2879,6 +2940,7 @@ class TicketController extends Controller
                 Lang::get('lang.ticket_id'),
                 Lang::get('lang.from'),
                 Lang::get('lang.assigned_to'),
+                Lang::get('lang.status'),
                 Lang::get('lang.last_activity')
             )->noScript();
     }
@@ -3003,6 +3065,11 @@ class TicketController extends Controller
                                 }
                             }
                         })
+                        ->editColumn('status_name', function ($tickets) {
+                            $name = $tickets->status_name ?? '—';
+
+                            return '<span class="label label-default">'.e($name).'</span>';
+                        })
                         ->editColumn('updated_at', function ($tickets) {
                             $TicketDatarow = $tickets->updated_at;
                             $updated = '--';
@@ -3012,7 +3079,7 @@ class TicketController extends Controller
 
                             return '<span style="display:none">'.$updated.'</span>'.UTC::usertimezone($updated);
                         })
-                        ->rawColumns(['id', 'title', 'ticket_number', 'c_uname', 'a_uname', 'updated_at'])
+                        ->rawColumns(['id', 'title', 'ticket_number', 'c_uname', 'a_uname', 'status_name', 'updated_at'])
                         ->make();
     }
 
@@ -3041,6 +3108,7 @@ class TicketController extends Controller
                     Lang::get('lang.priority'),
                     Lang::get('lang.from'),
                     Lang::get('lang.assigned_to'),
+                    Lang::get('lang.status'),
                     Lang::get('lang.last_activity'),
                     Lang::get('lang.created-at')
                 )

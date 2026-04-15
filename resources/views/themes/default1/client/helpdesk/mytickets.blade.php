@@ -25,7 +25,7 @@ class="nav-item active"
 <div id="content" class="site-content col-md-12">
     <?php
     $open = App\Model\helpdesk\Ticket\Tickets::where('user_id', '=', Auth::user()->id)
-            ->where('status', '=', 1)
+            ->whereNotIn('status', [2, 3])
             ->orderBy('id', 'DESC')
             ->paginate(10);
     ?>

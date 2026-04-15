@@ -128,22 +128,20 @@ class AuthController extends Controller
      *
      * @return type Response
      */
-    public function getRegister(CommonSettings $settings)
+    public function getRegister()
     {
-        // Event for login
-        $settings = $settings->select('status')->where('option_name', '=', 'send_otp')->first();
-        $email_mandatory = $settings->select('status')->where('option_name', '=', 'email_mandatory')->first();
-        //dd($settings->status);
+        $settings = CommonSettings::select('status')->where('option_name', '=', 'send_otp')->first();
+        $email_mandatory = CommonSettings::select('status')->where('option_name', '=', 'email_mandatory')->first();
         event(new \App\Events\FormRegisterEvent());
         if (Auth::user()) {
             if (Auth::user()->role == 'admin' || Auth::user()->role == 'agent') {
                 return \Redirect::route('dashboard');
-            } elseif (Auth::user()->role == 'user') {
-                // return view('auth.register');
             }
-        } else {
-            return view('auth.register', compact('settings', 'email_mandatory'));
+
+            return redirect($this->redirectToUser);
         }
+
+        return view('auth.register', compact('settings', 'email_mandatory'));
     }
 
     /**

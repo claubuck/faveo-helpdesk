@@ -90,12 +90,12 @@ $path = public_path();
                         d.options = "{{$inputs}}";
                     }
                 },
-                "aaSorting": [[5, "desc"]],
+                "aaSorting": [[6, "desc"]],
                 "columnDefs": [
                     {"defaultContent": "-",
                         "targets": "_all"},
                     { "orderable": false, "targets": 0},
-                    { "visible": true, "targets": 5 },
+                    { "visible": true, "targets": 6 },
                     {
                         "aTargets": [0],
                         "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
@@ -112,6 +112,7 @@ $path = public_path();
                     {data: "ticket_number"},
                     {data: "c_uname"},
                     {data: "a_uname"},
+                    {data: "status_name"},
                     {data: "updated_at"},
                 ],
                 "fnCreatedRow": function (nRow, aData, iDataIndex) {

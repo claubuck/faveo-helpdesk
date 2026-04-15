@@ -314,10 +314,13 @@ class FormController extends Controller
     {
         $html = '';
         $helptopic_id = $request->input('helptopic');
+        if ($helptopic_id === null || $helptopic_id === '') {
+            return $html;
+        }
         $helptopics = new Help_topic();
         $helptopic = $helptopics->find($helptopic_id);
         if (!$helptopic) {
-            throw new Exception('We can not find your request');
+            return $html;
         }
         $custom_form = $helptopic->custom_form;
         if ($custom_form) {

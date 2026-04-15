@@ -97,6 +97,7 @@ class FilterController extends Controller
         $ticket = new Tickets();
         $tickets = $ticket
                         ->leftJoin('ticket_source', 'ticket_source.id', '=', 'tickets.source')
+                        ->leftJoin('ticket_status', 'ticket_status.id', '=', 'tickets.status')
                         ->leftJoin('ticket_priority', 'ticket_priority.priority_id', '=', 'tickets.priority_id')
                         ->leftJoin('users as u1', 'u1.id', '=', 'tickets.user_id')
                         ->leftJoin('teams', 'teams.id', '=', 'tickets.team_id')
@@ -133,7 +134,8 @@ class FilterController extends Controller
                             \DB::raw('COUNT(DISTINCT th.id) as countthread'),
                             \DB::raw('substring_index(group_concat(if(`th`.`is_internal` = 0, `th`.`poster`,null)ORDER By th.id desc) , ",", 1) as last_replier'),
                             \DB::raw('substring_index(group_concat(th.title order by th.id asc SEPARATOR "-||,||-") , "-||,||-", 1) as ticket_title'),
-                            'ticket_source.name as source'
+                            'ticket_source.name as source',
+                            'ticket_status.name as status_name'
                         )->groupby('tickets.id');
 
         return $tickets;
@@ -397,6 +399,10 @@ class FilterController extends Controller
 
             case 'approval':
                 return $this->returnShowPageWithStatus($has_status, $table, 'approval');
+                break;
+
+            case 'inprogress':
+                return $this->returnShowPageWithStatus($has_status, $table, 'inprogress');
                 break;
 
             case 'closed':

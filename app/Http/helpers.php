@@ -162,6 +162,10 @@ function getStatusArray($status)
     if ($status === 'approval') {
         return [7];
     }
+    // Status 8 = In progress (En curso)
+    if ($status === 'inprogress') {
+        return [8];
+    }
     $type = new App\Model\helpdesk\Ticket\Ticket_Status();
     $values = $type->where('state', '=', $status)->pluck('id')->toArray();
 

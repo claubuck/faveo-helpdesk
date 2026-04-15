@@ -144,6 +144,8 @@ var filterClick = 0;
                         c_status = "Resolve";
                     } else if (id == 3) {
                         c_status = "Close";
+                    } else if (id == 8) {
+                        c_status = "In progress";
                     } else if(id == 5) {
                         c_status = "Delete";
                     } else if(id == 'hard-delete') {

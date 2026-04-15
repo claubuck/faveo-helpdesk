@@ -1532,6 +1532,10 @@ return [
     'close_all_ticket_for_approval'          => 'Close all tickets for approval',
     'approval_settings-created-successfully' => 'Approval settings created successfully',
 
+    'in_progress'           => 'In progress',
+    'in progress'           => 'In progress',
+    'tickets_have_been_set_in_progress' => 'Tickets have been set to in progress',
+
     /* --------------------------------------------------------------------------------------------
      * Followup Updated
      * --------------------------------------------------------------------------------------------

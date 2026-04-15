@@ -116,8 +116,9 @@ class="nav-link active"
                 <td>
                     {!! Form::open(['route'=>['agents.destroy', $use->id],'method'=>'DELETE']) !!}
                     <a href="{{route('agents.edit', $use->id)}}" class="btn btn-primary btn-xs"><i class="fas fa-edit"> </i> {!! Lang::get('lang.edit') !!} </a>
-                    <!-- To pop up a confirm Message -->
-                    {{-- {!! Form::button(' <i class="fas fa-trash"> </i> '  . Lang::get('lang.delete') ,['type' => 'submit', 'class'=> 'btn btn-danger btn-xs','onclick'=>'return confirm("Are you sure?")']) !!} --}}
+                    @if($use->id != Auth::user()->id)
+                    {!! Form::button(' <i class="fas fa-trash"> </i> ' . Lang::get('lang.delete'), ['type' => 'submit', 'class'=> 'btn btn-danger btn-xs', 'onclick'=>'return confirm("'.Lang::get('lang.are_you_sure').'")']) !!}
+                    @endif
                     {!! Form::close() !!}
                 </td>
             </tr>

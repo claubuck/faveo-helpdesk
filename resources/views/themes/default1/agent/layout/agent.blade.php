@@ -551,6 +551,10 @@
                             </li>
 
                             <li class="nav-item d-none d-sm-inline-block">
+                              <a href="{{ url('/tickets?show=inprogress') }}" @yield('inprogress') class="nav-link" id="load-inprogress">{!! Lang::get('lang.in_progress') !!}</a>
+                            </li>
+
+                            <li class="nav-item d-none d-sm-inline-block">
                               <a href="{{ url('/tickets?show=closed') }}" @yield('closed') class="nav-link">{!! Lang::get('lang.closed') !!}</a>
                             </li>
 
