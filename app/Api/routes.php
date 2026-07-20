@@ -15,7 +15,7 @@ Route::prefix('api/v1')->group(function () {
     Route::post('authenticate', [\App\Api\v1\TokenAuthController::class, 'authenticate']);
     Route::get('authenticate/user', [\App\Api\v1\TokenAuthController::class, 'getAuthenticatedUser']);
     Route::get('/database-config', [\App\Api\v1\InstallerApiController::class, 'config_database'])->name('database-config');
-    Route::get('/system-config', [\App\Api\v1\InstallerApiController::class, 'config_system'])->name('database-config');
+    Route::get('/system-config', [\App\Api\v1\InstallerApiController::class, 'config_system'])->name('system-config');
     /*
      * Helpdesk
      */
