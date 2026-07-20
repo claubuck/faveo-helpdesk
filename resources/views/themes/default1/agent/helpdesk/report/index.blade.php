@@ -226,6 +226,16 @@ class="active"
 
 <div class="card card-light">
     <div class="card-header">
+        <h3 class="card-title">Exportar tickets a Excel</h3>
+    </div>
+    <div class="card-body">
+        <p class="text-muted">Use las mismas fechas de inicio y fin del reporte de arriba. Si no hay fechas seleccionadas, se exportan los tickets de los últimos 30 días.</p>
+        <a class="btn btn-success" href="#" id="export_tickets_excel"><i class="fas fa-file-excel"></i> Descargar Excel</a>
+    </div>
+</div>
+
+<div class="card card-light">
+    <div class="card-header">
         <h3 class="card-title">{!! Lang::get('lang.tabular') !!}</h3>
     </div>
     <div class="card-body">
@@ -688,6 +698,17 @@ class="active"
 //                                $("#form_pdf").submit(function(){
 //                                    alert('saasdas');
 //                                });
+                            });
+                            $('#export_tickets_excel').on('click', function(e) {
+                                e.preventDefault();
+                                var date1 = $('#datepicker4').val();
+                                var date2 = $('#datetimepicker3').val();
+                                var base = "{!! route('ticket.export') !!}";
+                                if (date1 && date2) {
+                                    window.location.href = base + '?start_date=' + encodeURIComponent(date1) + '&end_date=' + encodeURIComponent(date2);
+                                } else {
+                                    window.location.href = base;
+                                }
                             });
                         });
 </script>
