@@ -60,7 +60,7 @@
 @endif
 
 <!-- form open -->
-{!!  Form::open(['route'=> 'otp-verification', 'method'=>'post']) !!}
+{!!  Form::open(['route'=> 'otp-verification.verify', 'method'=>'post']) !!}
 <!-- Email -->
 <div class="form-group has-feedback {{ $errors->has('email') ? 'has-error' : '' }}">
     {!! Form::hidden('email',null,['placeholder'=> Lang::get("lang.email") ,'class' => 'form-control']) !!}
