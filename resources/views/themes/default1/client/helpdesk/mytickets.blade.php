@@ -11,7 +11,7 @@ class="nav-item active"
     {{--<div class="site-hero clearfix">--}}
     <ol class="breadcrumb float-sm-right ">
         <li class="breadcrumb-item"> <i class="fas fa-home"> </i> {!! Lang::get('lang.you_are_here') !!} : &nbsp;</li>
-        <li><a href="{!! URL::route('ticket') !!}">{!! Lang::get('lang.my_tickets') !!}</a></li>
+        <li><a href="{!! URL::route('client.myticket') !!}">{!! Lang::get('lang.my_tickets') !!}</a></li>
     </ol>
 
 @stop
@@ -64,7 +64,7 @@ class="nav-item active"
 
         <div class="tab-content">
             <div class="tab-pane active" id="tab_1">
-                {!! Form::open(['route'=>'select_all','method'=>'post']) !!}
+                {!! Form::open(['route'=>'select_all.client','method'=>'post']) !!}
                 <div class="mailbox-controls mt-3">
                     <!-- Check all button -->
                     <a class="btn btn-light btn-sm checkbox-toggle" style="background-color: whitesmoke"><i class="far fa-square"></i></a>
@@ -154,7 +154,7 @@ class="nav-item active"
             </div><!-- /.box-body -->
             {{-- /.tab_1 --}}
             <div class="tab-pane" id="tab_2">
-                {!! Form::open(['route'=>'select_all','method'=>'post']) !!}
+                {!! Form::open(['route'=>'select_all.client','method'=>'post']) !!}
                 <div class="mailbox-controls mt-3">
                     <!-- Check all button -->
                     <a class="btn btn-light btn-sm checkbox-toggle" style="background-color: whitesmoke"><i class="far fa-square" ></i></a>
