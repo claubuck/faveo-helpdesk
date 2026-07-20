@@ -164,7 +164,7 @@
                         </a>
                     </li>
                     
-                    @if($auth_user_role == 'admin')
+                    @if($auth_user_role == 'admin' || $auth_user_role == 'agent')
                     <li class="nav-item d-none d-sm-inline-block">
                         <a href="{{URL::route('report.index')}}" onclick="clickReport(event);" @yield('Report') class="nav-link">{!! Lang::get('lang.report') !!}</a>
                     </li>
