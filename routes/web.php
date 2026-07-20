@@ -42,8 +42,8 @@ Route::middleware('web')->group(function () {
       | Here is defining entire routes for the Admin Panel
       |
      */
-    Route::get('password/email/{one?}/{two?}/{three?}/{four?}/{five?}', [Auth\PasswordController::class, 'getEmail'])->name('password.email');
-    Breadcrumbs::register('password.email', function ($breadcrumbs) {
+    Route::get('password/email/{one?}/{two?}/{three?}/{four?}/{five?}', [Auth\PasswordController::class, 'getEmail'])->name('password.email.form');
+    Breadcrumbs::register('password.email.form', function ($breadcrumbs) {
         $breadcrumbs->parent('/');
         $breadcrumbs->push('Login', url('auth/login'));
         $breadcrumbs->push('Forgot Password', url('password/email'));
@@ -71,7 +71,7 @@ Route::middleware('web')->group(function () {
     Route::get('account/activate/{token}', [Auth\AuthController::class, 'accountActivate'])->name('account.activate');
     Route::get('getmail/{token}', [Auth\AuthController::class, 'getMail']);
     Route::get('verify-otp', [Auth\AuthController::class, 'getVerifyOTP'])->name('otp-verification');
-    Route::post('verify-otp', [Auth\AuthController::class, 'verifyOTP'])->name('otp-verification');
+    Route::post('verify-otp', [Auth\AuthController::class, 'verifyOTP'])->name('otp-verification.verify');
     Route::post('resend/opt', [Auth\AuthController::class, 'resendOTP'])->name('resend-otp');
 
     /*
@@ -99,7 +99,6 @@ Route::middleware('web')->group(function () {
         Route::resource('departments', Admin\helpdesk\DepartmentController::class); // for departments module, for CRUD
 
         Route::resource('teams', Admin\helpdesk\TeamController::class); // in teams module, for CRUD
-        Route::get('/teams/show/{id}', [Admin\helpdesk\TeamController::class, 'show'])->name('teams.show'); /*  Get Team View */
         Breadcrumbs::register('teams.show', function ($breadcrumbs) {
             $breadcrumbs->parent('teams.index');
             $breadcrumbs->push(Lang::get('lang.show'), url('teams/{teams}/show'));
@@ -142,7 +141,7 @@ Route::middleware('web')->group(function () {
         Route::resource('forms', Admin\helpdesk\FormController::class);
         Route::get('forms/add-child/{formid}', [Admin\helpdesk\FormController::class, 'addChildForm'])->name('forms.add.child');
         Route::post('forms/field/{fieldid}/child', [Admin\helpdesk\FormController::class, 'addChild'])->name('forms.field.child');
-        Route::get('forms/render/child', [Admin\helpdesk\FormController::class, 'renderChild'])->name('forms.field.child');
+        Route::get('forms/render/child', [Admin\helpdesk\FormController::class, 'renderChild'])->name('forms.field.child.render');
 
         Route::get('delete-forms/{id}', [Admin\helpdesk\FormController::class, 'delete'])->name('forms.delete');
         //$router->model('id','getcompany');
@@ -299,11 +298,11 @@ Route::middleware('web')->group(function () {
     Route::middleware('install', 'update', 'auth', 'role.agent')->group(function () {
         Route::post('chart-range/{date1}/{date2}', [Agent\helpdesk\DashboardController::class, 'ChartData'])->name('post.chart');
         Route::get('agen1', [Agent\helpdesk\DashboardController::class, 'ChartData']);
-        Route::post('chart-range', [Agent\helpdesk\DashboardController::class, 'ChartData'])->name('post.chart');
+        Route::post('chart-range', [Agent\helpdesk\DashboardController::class, 'ChartData'])->name('post.chart.default');
         Route::post('user-chart-range/{id}/{date1}/{date2}', [Agent\helpdesk\DashboardController::class, 'userChartData'])->name('post.user.chart');
         Route::get('user-agen/{id}', [Agent\helpdesk\DashboardController::class, 'userChartData']);
         Route::get('user-agen1', [Agent\helpdesk\DashboardController::class, 'userChartData']);
-        Route::post('user-chart-range', [Agent\helpdesk\DashboardController::class, 'userChartData'])->name('post.user.chart');
+        Route::post('user-chart-range', [Agent\helpdesk\DashboardController::class, 'userChartData'])->name('post.user.chart.default');
         Route::resource('user', Agent\helpdesk\UserController::class); /* User router is used to control the CRUD of user */
         Route::get('user-export', [Agent\helpdesk\UserController::class, 'getExportUser'])->name('user.export'); /* User router is used to control the CRUD of user */
         Route::post('user-export', [Agent\helpdesk\UserController::class, 'exportUser'])->name('user.export.post'); /* User router is used to control the CRUD of user */
@@ -340,7 +339,7 @@ Route::middleware('web')->group(function () {
         Route::get('canned/show/{id}', [Agent\helpdesk\CannedController::class, 'show'])->name('canned.show'); /* Canned show */
         Route::delete('canned/destroy/{id}', [Agent\helpdesk\CannedController::class, 'destroy'])->name('canned.destroy'); /* Canned delete */
         Route::get('/test', [Agent\helpdesk\MailController::class, 'fetchdata'])->name('thr'); /*  Fetch Emails */
-        Route::get('/ticket', [Agent\helpdesk\TicketController::class, 'ticket_list'])->name('ticket'); /*  Get Ticket */
+        Route::get('/ticket', [Agent\helpdesk\TicketController::class, 'ticket_list'])->name('agent.ticket'); /*  Get Ticket */
         Route::get('/newticket', [Agent\helpdesk\TicketController::class, 'newticket'])->name('newticket'); /*  Get Create New Ticket */
 
         Route::get('/newticket/autofill', [Agent\helpdesk\TicketController::class, 'autofill'])->name('post.newticket.autofill');
@@ -369,14 +368,14 @@ Route::middleware('web')->group(function () {
         Route::post('select_all', [Agent\helpdesk\TicketController::class, 'select_all'])->name('select_all');
         Route::post('canned/{id}', [Agent\helpdesk\CannedController::class, 'get_canned']);
         // Route::get('message' , 'MessageController@show');
-        Route::post('lock', [Agent\helpdesk\TicketController::class, 'lock'])->name('lock');
+        Route::post('lock/{id}', [Agent\helpdesk\TicketController::class, 'lock'])->name('ticket.lock');
         Route::patch('user-org-assign/{id}', [Agent\helpdesk\UserController::class, 'UserAssignOrg'])->name('user.assign.org');
         Route::patch('user-org-edit-assign/{id}', [Agent\helpdesk\UserController::class, 'UsereditAssignOrg'])->name('user.editassign.org');
         Route::patch('/user-org/{id}', [Agent\helpdesk\UserController::class, 'User_Create_Org']);
         Route::patch('/head-org/{id}', [Agent\helpdesk\OrganizationController::class, 'Head_Org']);
 
         // To check and lock tickets
-        Route::get('check/lock/{id}', [Agent\helpdesk\TicketController::class, 'checkLock'])->name('lock');
+        Route::get('check/lock/{id}', [Agent\helpdesk\TicketController::class, 'checkLock'])->name('ticket.lock.check');
         Route::patch('/change-owner/{id}', [Agent\helpdesk\TicketController::class, 'changeOwner'])->name('change.owner.ticket'); /* change owner */
         //To merge tickets
         Route::get('/get-merge-tickets/{id}', [Agent\helpdesk\TicketController::class, 'getMergeTickets'])->name('get.merge.tickets');
@@ -399,6 +398,7 @@ Route::middleware('web')->group(function () {
         // route to get the data on change
         Route::post('help-topic-report/{date1}/{date2}/{id}', [Agent\helpdesk\ReportController::class, 'chartdataHelptopic'])->name('report.helptopic'); /* To show dashboard pages */
         Route::post('help-topic-pdf', [Agent\helpdesk\ReportController::class, 'helptopicPdf'])->name('help.topic.pdf');
+        Route::get('ticket-export', [Agent\helpdesk\ReportController::class, 'exportTickets'])->name('ticket.export');
         // Route to get details of agents
         Route::post('get-agents', [Agent\helpdesk\UserController::class, 'getAgentDetails'])->name('get-agents');
 
@@ -532,10 +532,10 @@ Route::middleware('web')->group(function () {
     //===================================================================================
     Route::middleware('auth')->group(function () {
         Route::get('client-profile', [Client\helpdesk\GuestController::class, 'getProfile'])->name('client.profile'); /*  User profile get  */
-        Route::post('select/all', [Agent\helpdesk\TicketController::class, 'select_all'])->name('select_all');
+        Route::post('select/all', [Agent\helpdesk\TicketController::class, 'select_all'])->name('select_all.client');
 
         Route::get('mytickets', [Client\helpdesk\GuestController::class, 'getMyticket'])->name('ticket2');
-        Route::get('myticket/{id}', [Client\helpdesk\GuestController::class, 'thread'])->name('ticket'); /* Get my tickets */
+        Route::get('myticket/{id}', [Client\helpdesk\GuestController::class, 'thread'])->name('client.myticket.thread'); /* Get my tickets */
         Route::patch('client-profile-edit', [Client\helpdesk\GuestController::class, 'postProfile']); /* User Profile Post */
         Route::patch('client-profile-password', [Client\helpdesk\GuestController::class, 'postProfilePassword']); /*  Profile Password Post */
         Route::post('post/reply/{id}', [Client\helpdesk\ClientTicketController::class, 'reply'])->name('client.reply');
@@ -553,8 +553,8 @@ Route::middleware('web')->group(function () {
     });
     //====================================================================================
     Route::get('checkticket', [Client\helpdesk\ClientTicketController::class, 'getCheckTicket']); /* Check your Ticket */
-    Route::get('myticket', [Client\helpdesk\GuestController::class, 'getMyticket'])->name('ticket'); /* Get my tickets */
-    Route::get('myticket/{id}', [Client\helpdesk\GuestController::class, 'thread'])->name('ticket'); /* Get my tickets */
+    Route::get('myticket', [Client\helpdesk\GuestController::class, 'getMyticket'])->name('client.myticket'); /* Get my tickets */
+    Route::get('myticket/{id}', [Client\helpdesk\GuestController::class, 'thread'])->name('guest.myticket.thread'); /* Get my tickets */
     Route::post('postcheck', [Client\helpdesk\GuestController::class, 'PostCheckTicket']); /* post Check Ticket */
     Route::get('postcheck', [Client\helpdesk\GuestController::class, 'PostCheckTicket']);
     Route::post('post-ticket-reply/{id}', [Client\helpdesk\FormController::class, 'post_ticket_reply']);
@@ -717,7 +717,7 @@ Route::middleware('web')->group(function () {
     Route::post('show/resolve/{id}', [Client\helpdesk\UnAuthController::class, 'resolve'])->name('show.resolve'); /* Get reply Ratings */
 
     /* get the home page */
-    Route::get('knowledgebase', [Client\kb\UserController::class, 'home'])->name('home');
+    Route::get('knowledgebase', [Client\kb\UserController::class, 'home'])->name('kb.home');
     /* get the faq value to user */
     // $router->get('faq',['as'=>'faq' , 'uses'=>'Client\kb\UserController@Faq'] );
     /* get the cantact page to user */
@@ -810,9 +810,9 @@ Route::middleware('web')->group(function () {
     Route::get('category-list/swtich-language/{id}', [Client\helpdesk\UnAuthController::class, 'changeUserLanguage']);
     Route::get('show/swtich-language/{id}', [Client\helpdesk\UnAuthController::class, 'changeUserLanguage']);
     Route::get('pages/swtich-language/{id}', [Client\helpdesk\UnAuthController::class, 'changeUserLanguage'])->name('switch-user-lang');
-    Route::get('swtich-language/{id}', [Client\helpdesk\UnAuthController::class, 'changeUserLanguage'])->name('switch-user-lang');
-    Route::get('thread/swtich-language/{id}', [Client\helpdesk\UnAuthController::class, 'changeUserLanguage'])->name('switch-user-lang');
-    Route::get('ticket/swtich-language/{id}', [Client\helpdesk\UnAuthController::class, 'changeUserLanguage'])->name('switch-user-lang');
-    Route::get('social/swtich-language/{id}', [Client\helpdesk\UnAuthController::class, 'changeUserLanguage'])->name('switch-user-lang');
-    Route::get('language/swtich-language/{id}', [Client\helpdesk\UnAuthController::class, 'changeUserLanguage'])->name('switch-user-lang');
+    Route::get('swtich-language/{id}', [Client\helpdesk\UnAuthController::class, 'changeUserLanguage']);
+    Route::get('thread/swtich-language/{id}', [Client\helpdesk\UnAuthController::class, 'changeUserLanguage']);
+    Route::get('ticket/swtich-language/{id}', [Client\helpdesk\UnAuthController::class, 'changeUserLanguage']);
+    Route::get('social/swtich-language/{id}', [Client\helpdesk\UnAuthController::class, 'changeUserLanguage']);
+    Route::get('language/swtich-language/{id}', [Client\helpdesk\UnAuthController::class, 'changeUserLanguage']);
 });
