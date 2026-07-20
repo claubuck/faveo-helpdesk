@@ -3,12 +3,17 @@
 namespace App\Http\Controllers\Agent\helpdesk;
 
 // controllers
+use App\Exports\TicketExport;
 use App\Http\Controllers\Controller;
 use App\Model\helpdesk\Manage\Help_topic;
 // request
 use App\Model\helpdesk\Ticket\Tickets;
 // Model
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 use Vsmoraes\Pdf\PdfFacade;
 
 // classes
@@ -265,5 +270,111 @@ class ReportController extends Controller
         $html1 = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
 
         return PdfFacade::load($html1)->show(false, false, false);
+    }
+
+    /**
+     * Export tickets to Excel filtered by created_at range.
+     * Columns: Fecha, Tiempo, Detalle, Proyecto, Ticket, Estado Ticket, Tipo Soporte, Tablero, Agente, Solucion.
+     *
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse|\Illuminate\Http\Response
+     */
+    public function exportTickets(Request $request)
+    {
+        $startInput = $request->query('start_date');
+        $endInput = $request->query('end_date');
+
+        $query = DB::table('tickets')
+            ->leftJoin('ticket_status', 'tickets.status', '=', 'ticket_status.id')
+            ->leftJoin('help_topic', 'tickets.help_topic_id', '=', 'help_topic.id')
+            ->leftJoin('users', 'tickets.assigned_to', '=', 'users.id')
+            ->select([
+                'tickets.id',
+                'tickets.created_at',
+                'tickets.actual_resolution_hours',
+                'tickets.ticket_number',
+                DB::raw('(SELECT GROUP_CONCAT(DISTINCT t.name ORDER BY t.name SEPARATOR \', \')
+                    FROM team_assign_agent taa
+                    INNER JOIN teams t ON t.id = taa.team_id
+                    WHERE taa.agent_id = tickets.assigned_to) as team_name'),
+                'ticket_status.name as status_name',
+                'help_topic.topic as help_topic_topic',
+                DB::raw("TRIM(CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, ''))) as agent_name"),
+                DB::raw("(SELECT title FROM ticket_thread WHERE ticket_id = tickets.id AND poster = 'client' ORDER BY id ASC LIMIT 1) as detalle"),
+                DB::raw("(SELECT content FROM ticket_form_data WHERE ticket_id = tickets.id AND (title = 'tablero' OR title = 'Tablero') ORDER BY id ASC LIMIT 1) as tablero"),
+                DB::raw("(SELECT body FROM ticket_thread WHERE ticket_id = tickets.id AND poster = 'support' ORDER BY id DESC LIMIT 1) as solucion_body"),
+            ])
+            ->where('tickets.is_deleted', '=', 0);
+
+        if ($startInput && $endInput) {
+            try {
+                $start = Carbon::createFromFormat('d/m/Y', $startInput)->startOfDay();
+                $end = Carbon::createFromFormat('d/m/Y', $endInput)->endOfDay();
+                $query->whereBetween('tickets.created_at', [$start, $end]);
+            } catch (Exception $e) {
+                $query->whereBetween('tickets.created_at', [
+                    Carbon::now()->subDays(30)->startOfDay(),
+                    Carbon::now()->endOfDay(),
+                ]);
+            }
+        } else {
+            $query->whereBetween('tickets.created_at', [
+                Carbon::now()->subDays(30)->startOfDay(),
+                Carbon::now()->endOfDay(),
+            ]);
+        }
+
+        $rows = $query->orderBy('tickets.id', 'desc')->get();
+
+        $data = [];
+        foreach ($rows as $row) {
+            $fecha = $row->created_at ? Carbon::parse($row->created_at)->format('d/m/Y') : '';
+
+            $tiempo = '';
+            if ($row->actual_resolution_hours !== null && $row->actual_resolution_hours !== '') {
+                $tiempo = (string) $row->actual_resolution_hours;
+            }
+
+            $detalle = $row->detalle ?? '';
+            $proyecto = $row->team_name ?? '';
+            $ticketNum = $row->ticket_number ?? '';
+
+            $statusName = $row->status_name ?? '';
+            $estado = '';
+            if ($statusName !== '') {
+                $estado = trans('lang.'.strtolower($statusName));
+                if ($estado === 'lang.'.strtolower($statusName)) {
+                    $estado = $statusName;
+                }
+            }
+
+            $tipoSoporte = $row->help_topic_topic ?? '';
+            $tablero = $row->tablero ?? '';
+            $agente = trim((string) ($row->agent_name ?? ''));
+
+            $body = $row->solucion_body;
+            if ($body !== null && ! is_string($body)) {
+                $body = (string) $body;
+            }
+            $solucion = '';
+            if ($body) {
+                $solucion = strip_tags(html_entity_decode($body, ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+                $solucion = preg_replace('/\s+/u', ' ', trim($solucion));
+            }
+
+            $data[] = [
+                $fecha,
+                $tiempo,
+                $detalle,
+                $proyecto,
+                $ticketNum,
+                $estado,
+                $tipoSoporte,
+                $tablero,
+                $agente,
+                $solucion,
+            ];
+        }
+
+        return Excel::download(new TicketExport($data), 'tickets.xlsx');
     }
 }
