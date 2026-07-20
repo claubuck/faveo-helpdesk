@@ -16,7 +16,7 @@
             }
         </style>
         <li class="breadcrumb-item"> <i class="fas fa-home"> </i> {!! Lang::get('lang.you_are_here') !!} : &nbsp;</li>
-        <li><a class="words" href="{!! URL::route('home') !!}">{!! Lang::get('lang.knowledge_base') !!}</a></li>
+        <li><a class="words" href="{!! URL::route('kb.home') !!}">{!! Lang::get('lang.knowledge_base') !!}</a></li>
         <li class="words">></li>
         <li><a href="{!! URL::route('article-list') !!}">{!! Lang::get('lang.article_list') !!}</a></li>
     </ol>
