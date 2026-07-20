@@ -1400,7 +1400,7 @@ if ($thread->title != "") {
             $("#auto-submit").submit(function(){
             $.ajax({
             type: "POST",
-                    url: "{!! URL::route('lock',$tickets->id) !!}",
+                    url: "{!! URL::route('ticket.lock',$tickets->id) !!}",
             })
                     return false;
             });
@@ -2282,7 +2282,7 @@ echo $ticket_data->title;
             function lockAjaxCall(locktime){
             $.ajax({
             type: "GET",
-                    url: "{{URL::route('lock',$tickets->id)}}",
+                    url: "{{URL::route('ticket.lock.check',$tickets->id)}}",
                     dataType: "html",
                     data: $(this).serialize(),
                     success: function(response) {
