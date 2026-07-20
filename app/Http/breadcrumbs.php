@@ -535,12 +535,12 @@ Breadcrumbs::register('article-list', function ($breadcrumbs) {
 });
 
 Breadcrumbs::register('search', function ($breadcrumbs) {
-    $breadcrumbs->push('Knowledge-base', route('home'));
+    $breadcrumbs->push('Knowledge-base', route('kb.home'));
     $breadcrumbs->push('Search Result');
 });
 
 Breadcrumbs::register('show', function ($breadcrumbs) {
-    $breadcrumbs->push('Knowledge-base', route('home'));
+    $breadcrumbs->push('Knowledge-base', route('kb.home'));
     $breadcrumbs->push('Article List', route('article-list'));
     $breadcrumbs->push('Article');
 });
