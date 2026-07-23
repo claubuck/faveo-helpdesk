@@ -539,6 +539,20 @@ class TicketController extends Controller
             $ticket->estimated_resolution_hours = ($estimated !== null && $estimated !== '' && is_numeric(str_replace(',', '.', $estimated))) ? (float) str_replace(',', '.', $estimated) : null;
             $ticket->actual_resolution_hours = ($actual !== null && $actual !== '' && is_numeric(str_replace(',', '.', $actual))) ? (float) str_replace(',', '.', $actual) : null;
 
+            $duedate = Input::get('duedate');
+            if ($duedate) {
+                $parsed = \DateTime::createFromFormat('d/m/Y', $duedate);
+                $date_errors = \DateTime::getLastErrors();
+                $has_errors = is_array($date_errors) && ($date_errors['warning_count'] > 0 || $date_errors['error_count'] > 0);
+                if (!$parsed || $has_errors) {
+                    return 6;
+                }
+                // the field only carries a date, so the ticket is due by the end of that day
+                $ticket->duedate = $parsed->format('Y-m-d').' 23:59:59';
+            } else {
+                $ticket->duedate = null;
+            }
+
             $ticket->save();
 
             $threads = $thread->where('ticket_id', '=', $ticket_id)->first();

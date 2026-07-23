@@ -242,15 +242,7 @@ if ($thread->title != "") {
                     <b>{!! Lang::get('lang.created_date') !!}: </b> {{ UTC::userdate($tickets->created_at) }}
                 </div>
                 <div class="col-md-3">
-                    <b>{!! Lang::get('lang.due_date') !!}: </b>
-                    <?php
-                    $duedate = $tickets->duedate;
-                    $user_timezone = new DateTimeZone('Asia/Kolkata');
-                    $time = date_create($tickets->duedate, $user_timezone);
-                    date_add($time, date_interval_create_from_date_string($SlaPlan->grace_period));
-                    date_add($time, date_interval_create_from_date_string('30 minutes'));
-                    echo $time->format('Y-m-d H:i:s');
-                    ?>
+                    <b>{!! Lang::get('lang.due_date') !!}: </b> {{ UTC::userdate($tickets->duedate) }}
                 </div>
                 <div class="col-md-3">
                     <?php $response = App\Model\helpdesk\Ticket\Ticket_Thread::where('ticket_id', '=', $tickets->id)->get(); ?>
@@ -932,6 +924,13 @@ if ($thread->title != "") {
                                 <div class="form-group">
                                     <label>{!! Lang::get('lang.actual_resolution_hours') !!}</label>
                                     <input type="number" name="actual_resolution_hours" class="form-control" id="edit_actual_resolution_hours" value="{{ $tickets->actual_resolution_hours !== null ? $tickets->actual_resolution_hours : '' }}" placeholder="ej. 3" step="0.01" min="0">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group" id="duedate">
+                                    <label>{!! Lang::get('lang.due_date') !!}</label>
+                                    <input type="text" name="duedate" class="form-control" id="edit_duedate" value="{{ $tickets->duedate ? UTC::userdate($tickets->duedate) : '' }}" placeholder="dd/mm/aaaa" autocomplete="off">
+                                    <spam id="error-duedate" style="display:none" class="help-block text-red">Invalid Due date</spam>
                                 </div>
                             </div>
                         </div>
@@ -1659,10 +1658,24 @@ if ($thread->title != "") {
             else if (response == 5) {
             $("#error-priority").show();
             }
+            else if (response == 6) {
+            $("#error-duedate").show();
+            $("#duedate").addClass("has-error");
+            }
             }
     })
             return false;
     });
+
+// Due date picker inside the edit ticket modal
+            $('#edit_duedate').datetimepicker({
+                format: 'DD/MM/YYYY',
+                useCurrent: false
+            });
+            $('#edit_duedate').on('input change', function() {
+                $("#error-duedate").hide();
+                $("#duedate").removeClass("has-error");
+            });
 // Assign a ticket - Using event delegation to handle dynamically loaded modals
             $(document).on('submit', '#form1', function(e) {
                 e.preventDefault(); // Prevent default form submission
