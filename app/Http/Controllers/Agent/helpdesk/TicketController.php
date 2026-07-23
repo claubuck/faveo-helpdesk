@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\helpdesk\CreateTicketRequest;
 // requests
 use App\Http\Requests\helpdesk\TicketRequest;
+use App\Model\helpdesk\Agent\Assign_team_agent;
 use App\Model\helpdesk\Agent\Department;
 // models
 use App\Model\helpdesk\Agent\Teams;
@@ -455,6 +456,19 @@ class TicketController extends Controller
 
             $line = '---Reply above this line---<br><br>';
             $collaborators = Ticket_Collaborator::where('ticket_id', '=', $ticket_id)->get();
+            // copy every agent working the ticket: the assigned agent and, if the
+            // ticket belongs to a team, every member of that team
+            $agent_ids = collect([$tickets->assigned_to]);
+            if ($tickets->team_id) {
+                $agent_ids = $agent_ids->merge(
+                    Assign_team_agent::where('team_id', '=', $tickets->team_id)->pluck('agent_id')
+                );
+            }
+            foreach ($agent_ids->filter()->unique() as $agent_id) {
+                if ($agent_id != $tickets->user_id && !$collaborators->contains('user_id', $agent_id)) {
+                    $collaborators->push((object) ['user_id' => $agent_id]);
+                }
+            }
             $emails = Emails::where('department', '=', $tickets->dept_id)->first();
             if (!$email) {
                 $mail = false;

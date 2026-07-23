@@ -259,6 +259,9 @@ class PhpMailController extends Controller
                     //mail to collaborators
                     $collab_user_id = $collaborator->user_id;
                     $user_id_collab = User::where('id', '=', $collab_user_id)->first();
+                    if (!$user_id_collab || !$user_id_collab->email) {
+                        continue;
+                    }
                     $collab_email = $user_id_collab->email;
                     $m->cc($collab_email);
                 }
