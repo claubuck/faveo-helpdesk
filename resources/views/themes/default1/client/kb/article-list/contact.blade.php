@@ -23,7 +23,7 @@
         <hr>
         <p></p>
     </article>
-    {!! Form::open(['method'=>'post','action'=>'Client\kb\UserController@postContact']) !!}
+    {!! Form::open(['method'=>'post','url'=>route('post-contact')]) !!}
     @if(Session::has('success'))
     <div class="alert alert-success alert-dismissable">
         <i class="fa  fa-check-circle"></i>

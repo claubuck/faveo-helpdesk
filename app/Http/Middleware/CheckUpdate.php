@@ -65,7 +65,7 @@ class CheckUpdate
                 }
             }
             if (count($notifications) > 0) {
-                if (!array_key_exists('new-version', $notifications)) {
+                if (!$notifications->has('new-version')) {
                     $check_version = $this->checkNewVersion();
                     if ($check_version == true) {
                         $notify->create(['key' => 'new-version', 'value' => 'new version found please click <a href='.url('file-update').'><b>here to download</b></a>']);
