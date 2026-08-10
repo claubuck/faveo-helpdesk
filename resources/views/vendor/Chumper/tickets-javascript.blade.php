@@ -90,12 +90,12 @@ $path = public_path();
                         d.options = "{{$inputs}}";
                     }
                 },
-                "aaSorting": [[6, "desc"]],
+                "aaSorting": [[7, "desc"]],
                 "columnDefs": [
                     {"defaultContent": "-",
                         "targets": "_all"},
                     { "orderable": false, "targets": 0},
-                    { "visible": true, "targets": 6 },
+                    { "visible": true, "targets": 7 },
                     {
                         "aTargets": [0],
                         "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
@@ -113,6 +113,7 @@ $path = public_path();
                     {data: "c_uname"},
                     {data: "a_uname"},
                     {data: "status_name"},
+                    {data: "orden"},
                     {data: "updated_at"},
                 ],
                 "fnCreatedRow": function (nRow, aData, iDataIndex) {

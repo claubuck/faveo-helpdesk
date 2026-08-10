@@ -2969,6 +2969,7 @@ class TicketController extends Controller
                 Lang::get('lang.from'),
                 Lang::get('lang.assigned_to'),
                 Lang::get('lang.status'),
+                'Orden',
                 Lang::get('lang.last_activity')
             )->noScript();
     }
