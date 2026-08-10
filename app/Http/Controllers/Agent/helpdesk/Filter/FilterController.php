@@ -105,6 +105,10 @@ class FilterController extends Controller
                         ->leftJoin('ticket_collaborator', 'ticket_collaborator.ticket_id', '=', 'tickets.id')
                         ->leftJoin('ticket_thread as th', 'th.ticket_id', '=', 'tickets.id')
                         ->leftJoin('ticket_attachment', 'ticket_attachment.thread_id', '=', 'th.id')
+                        ->leftJoin('ticket_form_data as tfd_orden', function ($join) {
+                            $join->on('tfd_orden.ticket_id', '=', 'tickets.id')
+                                 ->where('tfd_orden.title', '=', 'orden');
+                        })
                         ->select(
                             'tickets.id',
                             'th.title',
@@ -135,7 +139,8 @@ class FilterController extends Controller
                             \DB::raw('substring_index(group_concat(if(`th`.`is_internal` = 0, `th`.`poster`,null)ORDER By th.id desc) , ",", 1) as last_replier'),
                             \DB::raw('substring_index(group_concat(th.title order by th.id asc SEPARATOR "-||,||-") , "-||,||-", 1) as ticket_title'),
                             'ticket_source.name as source',
-                            'ticket_status.name as status_name'
+                            'ticket_status.name as status_name',
+                            \DB::raw('MAX(tfd_orden.content) as orden')
                         )->groupby('tickets.id');
 
         return $tickets;

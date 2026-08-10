@@ -10,7 +10,7 @@ foreach($segments as $seg){
         var clicked = 1;
         var create = false;
         var last = true;
-        var sort = [[7, "desc"]];
+        var sort = [[8, "desc"]];
         oTable = myFunction();
         $("select[name=label]").change(function () {
             $("#chumper").dataTable().fnDestroy();
@@ -65,8 +65,8 @@ foreach($segments as $seg){
                 "columnDefs": [
                     {"defaultContent": "-",
                         "targets": "_all"},
-                    { "visible": last, "targets": 7 },
-                    {"visible": create, "targets": 8},
+                    { "visible": last, "targets": 8 },
+                    {"visible": create, "targets": 9},
                 ],
                 "columns":[
                     {data: "id"},
@@ -76,6 +76,7 @@ foreach($segments as $seg){
                     {data: "user_name"},
                     {data: "assign_user_name"},
                     {data: "status_name"},
+                    {data: "orden"},
                     {data: "updated_at"},
                 ],
                 "fnCreatedRow": function (nRow, aData, iDataIndex) {
@@ -106,12 +107,12 @@ foreach($segments as $seg){
             if((clicked%2)== 0){
                 last = false;
                 create = true;
-                sort = [[8, "desc"]]
+                sort = [[9, "desc"]]
                 $('a.toggle-vis').html('<i class="fa fa-clock-o" style="color:green;"> </i>{!!Lang::get("lang.last_activity")!!}');
             } else {
                 last = true;
                 create = false;
-                sort = [[7, "desc"]]
+                sort = [[8, "desc"]]
                 $('a.toggle-vis').html('<i class="fa fa-plus-square-o" style="color:green;"> </i>{!!Lang::get("lang.created-at")!!}');
 
             }

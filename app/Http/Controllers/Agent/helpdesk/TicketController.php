@@ -3107,6 +3107,9 @@ class TicketController extends Controller
 
                             return '<span style="display:none">'.$updated.'</span>'.UTC::usertimezone($updated);
                         })
+                        ->editColumn('orden', function ($tickets) {
+                            return isset($tickets->orden) && $tickets->orden !== null && $tickets->orden !== '' ? $tickets->orden : '--';
+                        })
                         ->rawColumns(['id', 'title', 'ticket_number', 'c_uname', 'a_uname', 'status_name', 'updated_at'])
                         ->make();
     }
@@ -3137,6 +3140,7 @@ class TicketController extends Controller
                     Lang::get('lang.from'),
                     Lang::get('lang.assigned_to'),
                     Lang::get('lang.status'),
+                    'Orden',
                     Lang::get('lang.last_activity'),
                     Lang::get('lang.created-at')
                 )
@@ -3160,6 +3164,8 @@ class TicketController extends Controller
                     Lang::get('lang.priority'),
                     Lang::get('lang.from'),
                     Lang::get('lang.assigned_to'),
+                    Lang::get('lang.status'),
+                    'Orden',
                     Lang::get('lang.last_activity'),
                     Lang::get('lang.created-at')
                 )
@@ -3183,6 +3189,8 @@ class TicketController extends Controller
                     Lang::get('lang.priority'),
                     Lang::get('lang.from'),
                     Lang::get('lang.assigned_to'),
+                    Lang::get('lang.status'),
+                    'Orden',
                     Lang::get('lang.last_activity'),
                     Lang::get('lang.created-at')
                 )
@@ -3206,6 +3214,8 @@ class TicketController extends Controller
                     Lang::get('lang.priority'),
                     Lang::get('lang.from'),
                     Lang::get('lang.assigned_to'),
+                    Lang::get('lang.status'),
+                    'Orden',
                     Lang::get('lang.last_activity'),
                     Lang::get('lang.created-at')
                 )
@@ -3229,6 +3239,8 @@ class TicketController extends Controller
                     Lang::get('lang.priority'),
                     Lang::get('lang.from'),
                     Lang::get('lang.assigned_to'),
+                    Lang::get('lang.status'),
+                    'Orden',
                     Lang::get('lang.last_activity'),
                     Lang::get('lang.created-at')
                 )
@@ -3252,6 +3264,8 @@ class TicketController extends Controller
                     Lang::get('lang.priority'),
                     Lang::get('lang.from'),
                     Lang::get('lang.assigned_to'),
+                    Lang::get('lang.status'),
+                    'Orden',
                     Lang::get('lang.last_activity'),
                     Lang::get('lang.created-at')
                 )
@@ -3275,6 +3289,8 @@ class TicketController extends Controller
                     Lang::get('lang.priority'),
                     Lang::get('lang.from'),
                     Lang::get('lang.assigned_to'),
+                    Lang::get('lang.status'),
+                    'Orden',
                     Lang::get('lang.last_activity'),
                     Lang::get('lang.created-at')
                 )
@@ -3298,6 +3314,8 @@ class TicketController extends Controller
                     Lang::get('lang.priority'),
                     Lang::get('lang.from'),
                     Lang::get('lang.assigned_to'),
+                    Lang::get('lang.status'),
+                    'Orden',
                     Lang::get('lang.last_activity'),
                     Lang::get('lang.created-at')
                 )
@@ -3364,6 +3382,8 @@ class TicketController extends Controller
                     Lang::get('lang.priority'),
                     Lang::get('lang.from'),
                     Lang::get('lang.assigned_to'),
+                    Lang::get('lang.status'),
+                    'Orden',
                     Lang::get('lang.last_activity'),
                     Lang::get('lang.created-at')
                 )
@@ -3387,6 +3407,8 @@ class TicketController extends Controller
                     Lang::get('lang.priority'),
                     Lang::get('lang.from'),
                     Lang::get('lang.assigned_to'),
+                    Lang::get('lang.status'),
+                    'Orden',
                     Lang::get('lang.last_activity'),
                     Lang::get('lang.created-at')
                 )
@@ -3410,6 +3432,8 @@ class TicketController extends Controller
                     Lang::get('lang.priority'),
                     Lang::get('lang.from'),
                     Lang::get('lang.assigned_to'),
+                    Lang::get('lang.status'),
+                    'Orden',
                     Lang::get('lang.last_activity'),
                     Lang::get('lang.created-at')
                 )
