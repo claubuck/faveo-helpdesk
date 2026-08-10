@@ -8,7 +8,27 @@ class Tickets extends BaseModel
 {
     protected $table = 'tickets';
 
-    protected $fillable = ['id', 'ticket_number', 'num_sequence', 'user_id', 'priority_id', 'sla', 'help_topic_id', 'max_open_ticket', 'captcha', 'status', 'lock_by', 'lock_at', 'source', 'isoverdue', 'reopened', 'isanswered', 'is_deleted', 'closed', 'is_transfer', 'transfer_at', 'reopened_at', 'duedate', 'estimated_resolution_hours', 'actual_resolution_hours', 'closed_at', 'last_message_at', 'last_response_at', 'created_at', 'updated_at', 'assigned_to'];
+    protected $fillable = ['id', 'ticket_number', 'num_sequence', 'user_id', 'priority_id', 'sla', 'help_topic_id', 'max_open_ticket', 'captcha', 'status', 'status_changed_at', 'lock_by', 'lock_at', 'source', 'isoverdue', 'reopened', 'isanswered', 'is_deleted', 'closed', 'is_transfer', 'transfer_at', 'reopened_at', 'duedate', 'estimated_resolution_hours', 'actual_resolution_hours', 'closed_at', 'last_message_at', 'last_response_at', 'created_at', 'updated_at', 'assigned_to'];
+
+    /**
+     * Stamp status_changed_at whenever the status actually changes, so
+     * time-in-status rules have a single source of truth instead of relying
+     * on updated_at (which any edit touches).
+     */
+    protected static function booted()
+    {
+        static::creating(function ($ticket) {
+            if (empty($ticket->status_changed_at)) {
+                $ticket->status_changed_at = \Carbon\Carbon::now();
+            }
+        });
+
+        static::updating(function ($ticket) {
+            if ($ticket->isDirty('status') && !$ticket->isDirty('status_changed_at')) {
+                $ticket->status_changed_at = \Carbon\Carbon::now();
+            }
+        });
+    }
 
 //        public function attach(){
 //            return $this->hasMany('App\Model\helpdesk\Ticket\Ticket_attachments',);

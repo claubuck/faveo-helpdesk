@@ -59,6 +59,10 @@ if (Request::has('assigned'))
     @section('inprogress')
         class="nav-link active"
     @stop
+@elseif($activepage == 'blocked')
+    @section('blocked')
+        class="nav-link active"
+    @stop
 @elseif($activepage == 'Agent')
     @section('answered')
         class="nav-link active"
@@ -126,6 +130,8 @@ if (Request::has('assigned'))
             {{Lang::get('lang.approval')}}
             @elseif($activepage == 'inprogress')
             {{Lang::get('lang.in_progress')}}
+            @elseif($activepage == 'blocked')
+            {{Lang::get('lang.blocked')}}
             @elseif($activepage == 0)
             {{Lang::get('lang.unassigned')}}
             @else

@@ -194,7 +194,7 @@ class Finder
     public static function getCustomedStatus()
     {
         $status = Ticket_Status::select('id', 'name', 'icon_class')
-                ->whereIn('id', [1, 2, 3, 5, 8])->get();
+                ->whereIn('id', [1, 2, 3, 5, 8, 9])->get();
 
         return $status;
     }

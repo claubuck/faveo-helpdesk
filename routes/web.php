@@ -546,6 +546,7 @@ Route::middleware('web')->group(function () {
         Route::post('/ticket/resolve/{id}', [Agent\helpdesk\TicketController::class, 'resolve'])->name('ticket.resolve'); /*  Get ticket Resolve */
         Route::post('/ticket/open/{id}', [Agent\helpdesk\TicketController::class, 'open'])->name('ticket.open'); /*  Get Ticket Open */
         Route::post('/ticket/inprogress/{id}', [Agent\helpdesk\TicketController::class, 'setInProgress'])->name('ticket.inprogress'); /* Set ticket In progress */
+        Route::post('/ticket/blocked/{id}', [Agent\helpdesk\TicketController::class, 'setBlocked'])->name('ticket.blocked'); /* Set ticket Blocked */
         Route::post('/ticket/send-for-approval/{id}', [Agent\helpdesk\TicketController::class, 'sendForApproval'])->name('ticket.send.for.approval'); /* Send ticket to approval (status 7) */
         Route::get('image/{id?}', [Agent\helpdesk\MailController::class, 'get_data'])->name('image'); /* get image */
         Route::post('rating/{id}', [Agent\helpdesk\TicketController::class, 'rating'])->name('ticket.rating'); /* Get overall Ratings */

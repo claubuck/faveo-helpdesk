@@ -410,6 +410,10 @@ class FilterController extends Controller
                 return $this->returnShowPageWithStatus($has_status, $table, 'inprogress');
                 break;
 
+            case 'blocked':
+                return $this->returnShowPageWithStatus($has_status, $table, 'blocked');
+                break;
+
             case 'closed':
                 return $this->returnShowPageWithStatus($has_status, $table, 'closed');
 

@@ -177,6 +177,10 @@ if ($thread->title != "") {
                     <a href="#" id="inprogress" class="dropdown-item"><i class="fas fa-spinner" style="color:teal;"> </i> {!! Lang::get('lang.in_progress') !!}</a>
                     <?php } ?>
 
+                    <?php if ( $tickets_approval->status != 7 && $tickets_approval->status != 2 && $tickets_approval->status != 3 && $group->can_edit_ticket == 1) { ?>
+                    <a href="#" id="blocked" class="dropdown-item"><i class="fas fa-ban" style="color:#dd4b39;"> </i> {!! Lang::get('lang.blocked') !!}</a>
+                    <?php } ?>
+
                     <?php if ( $tickets_approval->status != 7 && $group->can_edit_ticket == 1) { ?>
                     <a href="#" id="send_for_approval" class="dropdown-item"><i class="fas fa-paper-plane" style="color:orange;"> </i> {!! Lang::get('lang.send_for_approval') !!}</a>
                     <?php } ?>
@@ -1533,6 +1537,31 @@ if ($thread->title != "") {
                         $("#hide2").show();
                         $("#show2").hide();
                         var message = "{!! Lang::get('lang.in_progress') !!}";
+                        $("#alert10").css('display','block');
+                        $('#message-success0').html(message);
+                        setInterval(function(){ $("#alert10").css('display','none'); }, 4000);
+                        location.reload();
+                    }
+                });
+                return false;
+            });
+            // Set ticket to Blocked (status 9)
+            $('#blocked').on('click', function(e) {
+                e.preventDefault();
+                $.ajax({
+                    type: "POST",
+                    url: "../ticket/blocked/{{$tickets->id}}",
+                    data: { _token: "{{ csrf_token() }}" },
+                    beforeSend: function() {
+                        $("#hide2").hide();
+                        $("#show2").show();
+                    },
+                    success: function(response) {
+                        $("#refresh").load("../thread/{{$tickets->id}}   #refresh");
+                        $("#d1").trigger("click");
+                        $("#hide2").show();
+                        $("#show2").hide();
+                        var message = "{!! Lang::get('lang.blocked') !!}";
                         $("#alert10").css('display','block');
                         $('#message-success0').html(message);
                         setInterval(function(){ $("#alert10").css('display','none'); }, 4000);

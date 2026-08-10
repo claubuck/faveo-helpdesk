@@ -555,6 +555,10 @@
                             </li>
 
                             <li class="nav-item d-none d-sm-inline-block">
+                              <a href="{{ url('/tickets?show=blocked') }}" @yield('blocked') class="nav-link" id="load-blocked">{!! Lang::get('lang.blocked') !!}</a>
+                            </li>
+
+                            <li class="nav-item d-none d-sm-inline-block">
                               <a href="{{ url('/tickets?show=closed') }}" @yield('closed') class="nav-link">{!! Lang::get('lang.closed') !!}</a>
                             </li>
 

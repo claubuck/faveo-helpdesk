@@ -166,6 +166,10 @@ function getStatusArray($status)
     if ($status === 'inprogress') {
         return [8];
     }
+    // Status 9 = Blocked (Bloqueado)
+    if ($status === 'blocked') {
+        return [9];
+    }
     $type = new App\Model\helpdesk\Ticket\Ticket_Status();
     $values = $type->where('state', '=', $status)->pluck('id')->toArray();
 

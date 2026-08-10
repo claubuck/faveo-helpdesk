@@ -19,6 +19,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\SendReport::class,
         \App\Console\Commands\CloseWork::class,
         \App\Console\Commands\TicketFetch::class,
+        \App\Console\Commands\NotifyStaleTickets::class,
         \App\Console\Commands\UpdateEncryption::class,
         \App\Console\Commands\DropTables::class,
         \App\Console\Commands\Install::class,
@@ -45,6 +46,11 @@ class Kernel extends ConsoleKernel
                 $schedule->command('queue:listen '.$this->getCurrentQueue().' --sleep 60')->everyMinute();
             }
         }
+
+        // Registered outside the isInstall() guard on purpose: DB_INSTALL is not
+        // set in this deployment's .env, so everything above never runs. This
+        // command is also independent of the conditions table.
+        $schedule->command('ticket:notify-stale')->hourly()->withoutOverlapping();
     }
 
     public function execute($schedule, $task)

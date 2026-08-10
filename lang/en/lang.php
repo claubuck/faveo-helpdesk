@@ -1536,6 +1536,9 @@ return [
     'in progress'           => 'In progress',
     'tickets_have_been_set_in_progress' => 'Tickets have been set to in progress',
 
+    'blocked'                      => 'Blocked',
+    'tickets_have_been_blocked'    => 'Tickets have been blocked',
+
     /* --------------------------------------------------------------------------------------------
      * Followup Updated
      * --------------------------------------------------------------------------------------------

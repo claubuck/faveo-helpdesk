@@ -1544,6 +1544,9 @@ Puede ingresar el número de días de registros de base de datos que se eliminar
     'in progress'           => 'En curso',
     'tickets_have_been_set_in_progress' => 'Los tickets se han establecido en curso',
 
+    'blocked'                      => 'Bloqueado',
+    'tickets_have_been_blocked'    => 'Los tickets se han bloqueado',
+
     /* --------------------------------------------------------------------------------------------
      * Followup Updated
      * --------------------------------------------------------------------------------------------

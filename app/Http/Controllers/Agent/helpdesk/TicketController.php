@@ -1497,6 +1497,48 @@ class TicketController extends Controller
     }
 
     /**
+     * Set ticket status to Blocked (status 9 - Bloqueado).
+     *
+     * @param type $id
+     * @param type Tickets $ticket
+     *
+     * @return type string
+     */
+    public function setBlocked($id, Tickets $ticket)
+    {
+        if (Auth::user()->role == 'user') {
+            return redirect()->route('unauth');
+        }
+        $ticket_status = $ticket->where('id', '=', $id)->first();
+        if ($ticket_status == null) {
+            return redirect()->route('unauth');
+        }
+        $ticket_status->status = 9;
+        $ticket_status->save();
+        $ticket_status_message = Ticket_Status::where('id', '=', 9)->first();
+        if ($ticket_status_message) {
+            $thread = new Ticket_Thread();
+            $thread->ticket_id = $ticket_status->id;
+            $thread->user_id = Auth::user()->id;
+            $thread->is_internal = 1;
+            $name = Auth::user()->first_name && Auth::user()->last_name
+                ? Auth::user()->first_name.' '.Auth::user()->last_name
+                : Auth::user()->user_name;
+            $thread->body = $ticket_status_message->message.' '.$name;
+            $thread->save();
+        }
+        $data = [
+            'id'         => $ticket_status->ticket_number,
+            'status'     => 'Blocked',
+            'first_name' => Auth::user()->first_name,
+            'last_name'  => Auth::user()->last_name,
+        ];
+        event('change-status', [$data]);
+
+        return Lang::get('lang.blocked');
+    }
+
+    /**
      * Function to delete ticket.
      *
      * @param type $id
@@ -1981,6 +2023,8 @@ class TicketController extends Controller
                     $this->open($delete, new Tickets());
                 } elseif ($value == 'In progress') {
                     $this->setInProgress($delete, new Tickets());
+                } elseif ($value == 'Blocked') {
+                    $this->setBlocked($delete, new Tickets());
                 } elseif ($value == 'Delete forever') {
                     $notification = Notification::select('id')->where('model_id', '=', $ticket->id)->get();
                     foreach ($notification as $id) {
@@ -2031,6 +2075,8 @@ class TicketController extends Controller
                 return redirect()->back()->with('success', Lang::get('lang.tickets_have_been_opened'));
             } elseif ($value == 'In progress') {
                 return redirect()->back()->with('success', Lang::get('lang.tickets_have_been_set_in_progress'));
+            } elseif ($value == 'Blocked') {
+                return redirect()->back()->with('success', Lang::get('lang.tickets_have_been_blocked'));
             } else {
                 return redirect()->back()->with('success', Lang::get('lang.hard-delete-success-message'));
             }
@@ -2503,7 +2549,7 @@ class TicketController extends Controller
             Ticket_Collaborator::where('ticket_id', '=', $value)
                     ->update(['ticket_id' => $p_id]);
             Tickets::where('id', '=', $value)
-                    ->update(['status' => 3]);
+                    ->update(['status' => 3, 'status_changed_at' => \Carbon\Carbon::now()]);
             //event has $p_id and $value
             event('ticket.merge', [['parent' => $p_id, 'child' => $value]]);
             if (!empty(Input::get('reason'))) {
