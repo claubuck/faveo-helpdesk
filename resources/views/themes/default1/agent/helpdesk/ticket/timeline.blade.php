@@ -937,6 +937,57 @@ if ($thread->title != "") {
                                     <spam id="error-duedate" style="display:none" class="help-block text-red">Invalid Due date</spam>
                                 </div>
                             </div>
+    <?php
+    // Custom fields configured on this ticket's help topic, pre-filled with
+    // whatever the ticket already has stored in ticket_form_data.
+    $edit_custom_fields = collect();
+    $edit_topic = App\Model\helpdesk\Manage\Help_topic::find($tickets->help_topic_id);
+    if ($edit_topic && $edit_topic->custom_form) {
+        $edit_custom_fields = App\Model\helpdesk\Form\Fields::where('forms_id', '=', $edit_topic->custom_form)->get();
+    }
+    // pluck() gives a Collection, so read it with ->get(), not array functions
+    $edit_custom_values = App\Model\helpdesk\Ticket\Ticket_Form_Data::where('ticket_id', '=', $tickets->id)->pluck('content', 'title');
+    ?>
+    @foreach($edit_custom_fields as $edit_field)
+        <?php
+        $edit_value = $edit_custom_values->get($edit_field->name);
+        $edit_options = $edit_field->values()->pluck('field_value')->toArray();
+        ?>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>{{ $edit_field->label }}@if($edit_field->required === '1')<span class="text-red"> *</span>@endif</label>
+                                    @if($edit_field->type == 'select')
+                                    <select class="form-control" name="custom[{{ $edit_field->name }}]">
+                                        <option value="">{{ Lang::get('lang.select') }}</option>
+                                        @foreach($edit_options as $edit_option)
+                                        <option value="{{ $edit_option }}" @if((string) $edit_value === (string) $edit_option) selected @endif>{{ removeUnderscore($edit_option) }}</option>
+                                        @endforeach
+                                    </select>
+                                    @elseif($edit_field->type == 'textarea')
+                                    <textarea class="form-control" name="custom[{{ $edit_field->name }}]">{{ $edit_value }}</textarea>
+                                    @elseif($edit_field->type == 'radio')
+                                        @foreach($edit_options as $edit_option)
+                                        <div>
+                                            <input type="radio" name="custom[{{ $edit_field->name }}]" value="{{ $edit_option }}" @if((string) $edit_value === (string) $edit_option) checked @endif>
+                                            <span>&nbsp;{{ removeUnderscore($edit_option) }}</span>
+                                        </div>
+                                        @endforeach
+                                    @elseif($edit_field->type == 'checkbox')
+                                        <?php $edit_checked = array_map('trim', explode(',', (string) $edit_value)); ?>
+                                        @foreach($edit_options as $edit_option)
+                                        <div>
+                                            <input type="checkbox" name="custom[{{ $edit_field->name }}][]" value="{{ $edit_option }}" @if(in_array((string) $edit_option, $edit_checked, true)) checked @endif>
+                                            <span>&nbsp;{{ removeUnderscore($edit_option) }}</span>
+                                        </div>
+                                        @endforeach
+                                    @elseif($edit_field->type == 'hidden')
+                                    <input type="text" class="form-control" name="custom[{{ $edit_field->name }}]" value="{{ $edit_value }}" readonly>
+                                    @else
+                                    <input type="{{ $edit_field->type == 'email' ? 'email' : 'text' }}" class="form-control" name="custom[{{ $edit_field->name }}]" value="{{ $edit_value }}">
+                                    @endif
+                                </div>
+                            </div>
+    @endforeach
                         </div>
                     </div>
                     <div id="show" style="display:none;text-align: center;">

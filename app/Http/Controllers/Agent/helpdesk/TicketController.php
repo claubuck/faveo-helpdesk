@@ -555,11 +555,50 @@ class TicketController extends Controller
 
             $ticket->save();
 
+            $this->saveCustomFields($ticket, Input::get('custom'));
+
             $threads = $thread->where('ticket_id', '=', $ticket_id)->first();
             $threads->title = Input::get('subject');
             $threads->save();
 
             return 0;
+        }
+    }
+
+    /**
+     * Persist the custom form fields submitted from the edit ticket modal.
+     *
+     * Only fields that actually belong to the form of the ticket's help topic
+     * are stored, so an arbitrary key posted by hand is ignored.
+     *
+     * @param Tickets $ticket
+     * @param mixed   $submitted the "custom" input: [field name => value]
+     *
+     * @return void
+     */
+    protected function saveCustomFields($ticket, $submitted)
+    {
+        if (!is_array($submitted) || empty($submitted)) {
+            return;
+        }
+
+        $topic = Help_topic::find($ticket->help_topic_id);
+        if (!$topic || !$topic->custom_form) {
+            return;
+        }
+
+        $allowed = Fields::where('forms_id', '=', $topic->custom_form)->pluck('name');
+
+        foreach ($submitted as $name => $value) {
+            if (!$allowed->contains($name)) {
+                continue;
+            }
+            $content = is_array($value) ? implode(',', $value) : (string) $value;
+
+            Ticket_Form_Data::updateOrCreate(
+                ['ticket_id' => $ticket->id, 'title' => $name],
+                ['content' => $content]
+            );
         }
     }
 
